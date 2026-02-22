@@ -2,7 +2,7 @@ import { Background } from "@react-navigation/elements";
 import React, {useState} from "react";
 import {Text, Button, View} from "react-native";
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
-
+//jj
 const HomePage = () => {//enter game 
   return (
     <View>
