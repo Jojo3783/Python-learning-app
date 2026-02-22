@@ -1,9 +1,9 @@
 import React, {useState} from "react";
-import {Text, Button, View} from "react-native";
+import {Text, Button, View, StyleSheet} from "react-native";
 const HomePage = () => {//enter game 
   return (
     <View>
-      <Text style={styles.text}>Python學習應用程式</Text>
+      <Text style={Styles.text}>Python學習應用程式</Text>
       <Button 
       title="進入遊戲"
       onPress={SelectLevelPage}
@@ -24,10 +24,12 @@ const main = () => {
 
 };
 
-const styles = ({
+const styles = StyleSheet.create({//error need to be fix
   text : {
-  
-  }
-})
+    text-align: "center",
+
+  },
+
+});
 
 export default HomePage;
