@@ -10,6 +10,10 @@ export default function RootLayout() {
         options={{ headerShown: false }} 
       />
       
+      <Stack.Screen 
+        name="LevelSelectScreen" 
+        options={{ title: '關卡' }} 
+      />
 
       <Stack.Screen 
         name="LoginScreen" 

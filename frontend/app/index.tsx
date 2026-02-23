@@ -40,6 +40,9 @@ export default function index() {
               backgroundColor: themeColors.buttonColor,
               marginVertical:10,
              }]}
+             onPress={() => {
+              router.push('/LevelSelectScreen'); 
+            }}
           >
             <Text style={[styles.buttonText, { color: themeColors.textColor }]}>
               Quick login
@@ -63,7 +66,7 @@ export default function index() {
   );
 }
 
-
+//TODO: add a file name LevelSelectPage for select level
 const styles = StyleSheet.create({
   container: {
     flex: 1,
