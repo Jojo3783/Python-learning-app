@@ -33,8 +33,19 @@ export default function index() {
           />
         </View>
     
-        
+
         <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.button, { 
+              backgroundColor: themeColors.buttonColor,
+              marginVertical:10,
+             }]}
+          >
+            <Text style={[styles.buttonText, { color: themeColors.textColor }]}>
+              Quick login
+            </Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.button, { backgroundColor: themeColors.buttonColor }]}
             onPress={() => {
