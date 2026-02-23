@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 
 
 const themeColors = {
-    backgroundColor: '#6353e0', 
+    backgroundColor: '#8e80f5', 
     buttonColor: '#facc15',     
     textColor: '#374151',     
 };
@@ -32,7 +32,7 @@ export default function index() {
             resizeMode="contain" 
           />
         </View>
-    
+
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -52,13 +52,21 @@ export default function index() {
           <TouchableOpacity
             style={[styles.button, { backgroundColor: themeColors.buttonColor }]}
             onPress={() => {
-              router.push('/LoginScreen'); 
+              router.push('/SignUpScreen'); 
             }}
           >
             <Text style={[styles.buttonText, { color: themeColors.textColor }]}>
               Sign Up
             </Text>
           </TouchableOpacity>
+          <View>
+            <Text>Already have an account?</Text>
+            <TouchableOpacity>
+                <Text>  Log In </Text>
+            </TouchableOpacity>
+
+          </View>
+
         </View>
 
       </View>
