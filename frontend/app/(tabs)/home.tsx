@@ -3,7 +3,7 @@ import {Text, Button, View, StyleSheet} from "react-native";
 const HomePage = () => {//enter game 
   return (
     <View>
-      <Text style={Styles.text}>Python學習應用程式</Text>
+      <Text style={styles.text}>Python學習應用程式</Text>
       <Button 
       title="進入遊戲"
       onPress={SelectLevelPage}
