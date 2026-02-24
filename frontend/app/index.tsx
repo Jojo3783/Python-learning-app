@@ -22,8 +22,8 @@ export default function index() {
         
         <View style={styles.imageContainer}>
           <Image 
-             source={require("../assets/images/Gemini_Generated_Image_tfh2etfh2etfh2et.png")} 
-            style={{ width: 350, height: 350 }} 
+             source={require("../assets/images/TA.png")} 
+            style={{ width: 500, height: 500 }} 
             resizeMode="contain" 
           />
         </View>
@@ -44,7 +44,7 @@ export default function index() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.button, { backgroundColor: themeColors.buttonColor }]}
             onPress={() => {
               router.push('/SignUpScreen'); 
@@ -60,7 +60,7 @@ export default function index() {
                 <Text>  Log In </Text>
             </TouchableOpacity>
 
-          </View>
+          </View> */}
 
         </View>
 
