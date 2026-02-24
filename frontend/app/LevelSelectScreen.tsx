@@ -3,10 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 
 const LEVELS = [
-  { id: 1, name: '新手村', monster: '史萊姆', hp: 10, color: '#e0f7fa' },
-  { id: 2, name: '黑暗森林', monster: '大蜘蛛', hp: 50, color: '#d7ccc8' },
-  { id: 3, name: '魔王城', monster: '噴火龍', hp: 100, color: '#ffcdd2' },
+  { id: 1, name: '輸出Hello world', color: '#ffcdd2' },
+  { id: 2, name: '資料型態', color: '#ffcdd2' },
+  { id: 3, name: '算術運算', color: '#ffcdd2' },
+  { id: 4, name: '條件判斷',  color: '#ffcdd2' },
+  { id: 5, name: 'for迴圈',  color: '#ffcdd2' },
 ];
+
 
 export default function LevelSelectScreen() {
   const router = useRouter();

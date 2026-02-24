@@ -1,12 +1,41 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, Alert } from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, StyleSheet, Button, Alert, TextInput, TouchableOpacity  } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const LEVELS = [
-  { id: 1, name: '新手村', monster: '史萊姆', hp: 10, color: '#e0f7fa' },
-  { id: 2, name: '黑暗森林', monster: '大蜘蛛', hp: 50, color: '#d7ccc8' },
-  { id: 3, name: '魔王城', monster: '噴火龍', hp: 100, color: '#ffcdd2' },
+  { id: 1, description: "第1關的description", question: "第1關的question"},
+  { id: 2, description: "第2關的description", question: "第2關的question"},
+  { id: 3, description: "第3關的description", question: "第3關的question"},
+  { id: 4, description: "第4關的description", question: "第4關的question"},
+  { id: 5, description: "第5關的description", question: "第5關的question"},
 ];
+
+const CollapsibleBox = ({ title, content } : any) => {
+  // 1. 這是開關：預設是 false (關起來)
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <View style={styles.collapsibleContainer}>
+      {/* 2. 這是標題按鈕：點一下切換開關 */}
+      <TouchableOpacity 
+        style={styles.collapsibleHeader} 
+        onPress={() => setIsOpen(!isOpen)} // !isOpen 代表「反過來」 (開變關，關變開)
+      >
+        {/* 這裡用三元運算子來決定箭頭方向 */}
+        <Text style={styles.collapsibleTitle}>
+          {isOpen ? '▼' : '▶'} {title}
+        </Text>
+      </TouchableOpacity>
+
+      {/* 3. 這是內容：只有當 isOpen 為 true 時才畫出來 */}
+      {isOpen && (
+        <View style={styles.collapsibleContent}>
+          <Text style={styles.contentText}>{content}</Text>
+        </View>
+      )}
+    </View>
+  );
+};
 
 export default function GameScreen() {
   const router = useRouter();
@@ -15,21 +44,23 @@ export default function GameScreen() {
   const currentLevel = LEVELS[Number(targetLevelIndex)];
 
   const handleWin = () => {
-    Alert.alert('🎉 勝利！', `你打敗了 ${currentLevel.monster}`, [
-      { text: '回選關', onPress: () => router.back() },
-      { text: '回首頁', onPress: () => router.replace('/') },
-    ]);
+    Alert.alert(`你完成了${currentLevel.id}關`);
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: currentLevel.color }]}>
-      <Text style={styles.levelTitle}>第 {currentLevel.id} 關</Text>
+    <View style={styles.container}>
+      <Text style={styles.levelTitle}>{currentLevel.description}</Text>
+      <CollapsibleBox 
+      title="你需要知道的觀念"
+      content={currentLevel.description}
+      ></CollapsibleBox>
 
-      <Text style={{ fontSize: 60 }}>👾</Text>
-      <Text style={styles.monsterName}>{currentLevel.monster}</Text>
-      <Text>HP: {currentLevel.hp}</Text>
+      <CollapsibleBox 
+      title="問題描述"
+      content={currentLevel.question}
+      ></CollapsibleBox>
 
-      <Button title="發動攻擊 (Win)" onPress={handleWin} />
+      <Button title="提交程式" onPress={handleWin} />
     </View>
   );
 }
@@ -38,4 +69,31 @@ const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   levelTitle: { fontSize: 28, fontWeight: 'bold' },
   monsterName: { fontSize: 24, fontWeight: 'bold', marginVertical: 10 },
+  collapsibleContainer: {
+    width: '100%',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    marginVertical: 10, // 上下留白
+    overflow: 'hidden', // 讓圓角效果正常
+  },
+  // 標題區
+  collapsibleHeader: {
+    padding: 15,
+    backgroundColor: '#ddd', // 標題顏色深一點
+  },
+  collapsibleTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  // 內容區
+  collapsibleContent: {
+    padding: 15,
+    backgroundColor: '#fff', // 內容背景白色
+  },
+  contentText: {
+    fontSize: 14,
+    color: '#555',
+    lineHeight: 20, // 行高，讓文字不要擠在一起
+  },
 });

@@ -2,6 +2,8 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "allowJs": true,
+    "jsx": "react-native",  // <--- 加入這一行（這就是系統跟你要的 JSX 旗標）
     "paths": {
       "@/*": [
         "./*"
@@ -12,6 +14,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "app/SingUpScreen.js"  ]
+    "expo-env.d.ts",
+    "app/SignUpScreen.js"
+  ]
 }
