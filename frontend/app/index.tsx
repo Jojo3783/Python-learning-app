@@ -5,11 +5,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router'; 
 
 
-const themeColors = {
-    backgroundColor: '#8e80f5', 
-    buttonColor: '#facc15',     
-    textColor: '#374151',     
-};
 
 export default function index() {
   const router = useRouter(); 
@@ -27,7 +22,7 @@ export default function index() {
         
         <View style={styles.imageContainer}>
           <Image 
-            // source={require("../assets/?")} 
+             source={require("../assets/images/Gemini_Generated_Image_tfh2etfh2etfh2et.png")} 
             style={{ width: 350, height: 350 }} 
             resizeMode="contain" 
           />
@@ -73,6 +68,15 @@ export default function index() {
     </SafeAreaView>
   );
 }
+
+
+
+
+const themeColors = {
+    backgroundColor: '#8e80f5', 
+    buttonColor: '#facc15',     
+    textColor: '#374151',     
+};
 
 //TODO: add a file name LevelSelectPage for select level
 const styles = StyleSheet.create({
