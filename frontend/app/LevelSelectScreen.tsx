@@ -1,3 +1,7 @@
+// 進場動畫（關卡一個個浮上來）
+// 已通關的關卡加 ✔️ / 發光
+// 鎖住未解鎖關卡（灰＋晃一下）   待做
+
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
