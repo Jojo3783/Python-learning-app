@@ -1,4 +1,4 @@
-// first page
+// first page  (welcome page)
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,7 +15,7 @@ export default function index() {
         
        
         <Text style={styles.title}>
-          Let's Get Started!
+          Start Your Learning Journey Here!
         </Text>
 
        
@@ -40,7 +40,7 @@ export default function index() {
             }}
           >
             <Text style={[styles.buttonText, { color: themeColors.textColor }]}>
-              Quick login
+              Let's Started
             </Text>
           </TouchableOpacity>
 
