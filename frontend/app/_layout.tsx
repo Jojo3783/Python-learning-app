@@ -1,5 +1,7 @@
 // 這邊類似 Navgation
 import { Stack } from 'expo-router';
+import { TouchableOpacity, Text } from 'react-native'; 
+
 
 export default function RootLayout() {
   return (
@@ -12,18 +14,31 @@ export default function RootLayout() {
       
       <Stack.Screen 
         name="LevelSelectScreen" 
-        options={{ 
+        options={({ navigation }) => ({ 
           title: '關卡',
+          headerShown: true,
           headerShadowVisible: false,
+          headerTransparent: true, // 🌟 
           headerStyle: {
-            backgroundColor:'#1A237E',
+            backgroundColor: 'transparent', // 配合透明
           },
-          headerTintColor: '#FFFFFF',
+          headerTintColor: '#00E5FF', // 螢光藍返回箭頭
           headerTitleStyle: {
-            fontWeight: 'bold',
+            fontWeight: '900',
             fontSize: 22,
-          }
-        }}
+            textShadowColor: 'rgba(0, 229, 255, 0.5)',
+            textShadowRadius: 10,
+          },
+          //  強制加入左側按鈕，解決重新整理消失的問題
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('index')} 
+              style={{ marginLeft: 10 }}
+            >
+              <Text style={{ color: '#00E5FF', fontWeight: 'bold', fontSize: 16 }}>←</Text>
+            </TouchableOpacity>
+          ),
+        })}
       />
 
       <Stack.Screen 
