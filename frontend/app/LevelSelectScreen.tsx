@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { apiService } from '../services/api';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const LEVELS = [
   { id: 1, name: '輸出Hello world', color: '#ffcdd2' },
@@ -46,7 +47,9 @@ export default function LevelSelectScreen() {
   };
 
   return (
-    <View style={styles.container}>
+      <LinearGradient
+    // 設定漸層顏色：由深藍轉向極深黑藍，更有宇宙感
+    colors={['#1A237E', '#121858', '#0D1231']} style={styles.container}>
       <Text style={styles.headerTitle}>請選擇關卡</Text>
       {statusMessage && (
         <Text style={styles.statusText}>{statusMessage}</Text>
@@ -79,15 +82,15 @@ export default function LevelSelectScreen() {
               ]}
               onPress={() => handleLevelPress(index)}
             >
-              <Text style={styles.levelBtnText}>
-                第 {level.id} 關：{level.name}
+              <Text style={styles.checkMark}>
+                  第 {level.id} 關：{level.name}
                 {isCompleted && ' ✔️'}
               </Text>
             </TouchableOpacity>
           </Animated.View>
         );
       })}
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -95,36 +98,72 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 20,
+    paddingTop: 60,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#00E5FF', // 螢光藍：科技感
+    marginBottom: 10,
+    textShadowColor: 'rgba(0, 229, 255, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
   },
   statusText: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 15,
+    fontSize: 14,
+    color: '#BBDEFB',
+    marginBottom: 20,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderColor: 'rgba(0, 229, 255, 0.3)',
+    borderRadius: 20,
   },
   levelBtn: {
-    width: 350,
-    padding: 20,
-    marginVertical: 10,
-    borderRadius: 10,
-    alignItems: 'center',
+    width: 340,
+    height: 90,
+    marginVertical: 12,
+    borderRadius: 20,
+    // 科技感裝飾：左側粗邊條
+    borderLeftWidth: 10,
+    // 陰影/發光效果
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
-  levelBtnText: {
-    fontSize: 18,
+  btnContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    height: '100%',
+  },
+  iconText: {
+    fontSize: 35,
+    marginRight: 15,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  levelNumber: {
+    fontSize: 12,
     fontWeight: 'bold',
+    color: '#757575',
+    letterSpacing: 1,
+  },
+  levelName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  checkMark: {
+    fontSize: 24,
+    marginLeft: 10,  // 數字越大越往右推
+    marginTop: 15,   // 數字越大越往下推
   },
   completedBtn: {
-    opacity: 0.7,
-    shadowColor: '#FFD700',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 10,
-    elevation: 5,
+    opacity: 0.6,
+    backgroundColor: '#E0E0E0',
   },
 });
