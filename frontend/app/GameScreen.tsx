@@ -136,7 +136,7 @@ const CollapsibleBox = ({ title, content } : any) => {
 export default function GameScreen() {
   const router = useRouter();
   const { targetLevelIndex } = useLocalSearchParams();
-
+  const [code, setCode] = useState('');
   const currentLevel = LEVELS[Number(targetLevelIndex)];
 
   const handleWin = () => {
@@ -156,7 +156,20 @@ export default function GameScreen() {
         title="問題描述"
         content={currentLevel.question}
         ></CollapsibleBox>
-
+        <View style={styles.codeEditorContainer}>
+        <TextInput
+          style={styles.codeInput}
+          multiline={true}             // 允許換行
+          numberOfLines={4}            // 預設顯示幾行高度
+          placeholder="請在此輸入 Python 程式碼..."
+          placeholderTextColor="#999"
+          value={code}
+          onChangeText={setCode}       // 當文字改變時，存入 state
+          autoCapitalize="none"        // 關閉自動大寫 (寫程式很重要！)
+          autoCorrect={false}          // 關閉自動修正
+          textAlignVertical="top"      // 讓文字從上面開始打 (Android 需要這行)
+        />
+      </View>
         <Button title="提交程式" onPress={handleWin} />
       </View>
     </ScrollView>
@@ -194,5 +207,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
     lineHeight: 20, // 行高，讓文字不要擠在一起
+  },
+  codeEditorContainer: {
+    width: '100%',
+    backgroundColor: '#2d2d2d', // 深色背景，像 VS Code
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#444',
+  },
+  codeInput: {
+    color: '#00ff00',      // 綠色文字，駭客風格
+    fontSize: 16,
+    fontFamily: 'monospace', // 等寬字體 (讓它看起來像程式碼)
+    minHeight: 100,          // 最小高度
   },
 });
