@@ -1,8 +1,29 @@
 // first page  (welcome page)
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router'; 
+import { Animated } from 'react-native';
+
+const blinkAnim = useRef(new Animated.Value(0.3)).current; // 初始透明度 0.3
+
+useEffect(() => {
+  // 建立呼吸燈循環動畫
+  Animated.loop(
+    Animated.sequence([
+      Animated.timing(blinkAnim, {
+        toValue: 1,      // 變亮
+        duration: 1200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(blinkAnim, {
+        toValue: 0.15,    // 變暗
+        duration: 1200,
+        useNativeDriver: true,
+      }),
+    ])
+  ).start();
+}, []);
 
 
 
@@ -18,9 +39,14 @@ export default function index() {
           Start Your Learning Journey Here!
         </Text>
 
-       
         
         <View style={styles.imageContainer}>
+          <Animated.View style={[styles.bubbleContainer, { opacity: blinkAnim }]}>
+            <View style={styles.bubble}>
+              <Text style={styles.bubbleText}>Hello Hello!!</Text>
+            </View>
+            <View style={styles.bubbleTail} />
+          </Animated.View>
           <Image 
              source={require("../assets/images/TA.png")} 
             style={{ width: 500, height: 500 }} 
@@ -96,9 +122,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   imageContainer: {
-    flexDirection: 'row',         
-    justifyContent: 'center',    
+    width: '100%',        // 讓容器佔滿寬度
+    alignItems: 'center',  // 讓內部的 Image 置中
+    justifyContent: 'center',
+    position: 'relative',
+    marginTop: 20,         // 給對話框留點上方空間
   },
+
   buttonContainer: {
     paddingHorizontal: 28,        
   },
@@ -116,5 +146,47 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-  }
+  },
+ bubbleContainer: {
+    position: 'absolute',
+    top: 50,           // 距離頂部的位置，數字越小越往上
+    right: 550,         // 距離右邊的位置，數字越小越往右
+    alignItems: 'center',
+    zIndex: 10,
+    // 讓對話框稍微傾斜一點點，看起來更活潑
+    transform: [{ rotate: '10deg' }], 
+  },
+  bubble: {
+    backgroundColor: 'white',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: '#facc15',
+    // 限制最大寬度，避免太長把老師遮住
+    maxWidth: 220,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  bubbleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#374151',
+  },
+  bubbleTail: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 10,
+    borderRightWidth: 10,
+    borderTopWidth: 15,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: 'white',
+    marginTop: -2,
+    // 讓尾巴稍微偏左一點，指向老師的頭部
+    marginRight: 40, 
+  },
 });
