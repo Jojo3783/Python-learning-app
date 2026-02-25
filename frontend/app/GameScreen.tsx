@@ -111,7 +111,6 @@ const CollapsibleBox = ({ title, content } : any) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <ScrollView>
       <View style={styles.collapsibleContainer}>
         {/* 2. 這是標題按鈕：點一下切換開關 */}
         <TouchableOpacity 
@@ -131,7 +130,6 @@ const CollapsibleBox = ({ title, content } : any) => {
           </View>
         )}
       </View>
-    </ScrollView>
   );
 };
 
@@ -176,6 +174,7 @@ const styles = StyleSheet.create({
     marginVertical: 10, // 上下留白
     overflow: 'hidden', // 讓圓角效果正常
   },
+  
   // 標題區
   collapsibleHeader: {
     padding: 15,
