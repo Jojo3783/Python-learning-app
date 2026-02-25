@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'http://127.0.0.1:8000';  // 之後要改電腦的實際 IP 位址
 
 export const apiService = {
   // 測試基本連接
