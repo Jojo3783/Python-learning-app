@@ -15,7 +15,7 @@ const LEVELS = [
 
 export default function LevelSelectScreen() {
   const router = useRouter();
-  const [statusMessage, setStatusMessage] = useState('衛星連線中...');
+  const [statusMessage, setStatusMessage] = useState('連線中...');
   
   // 這裡存放完成狀態，暫時預設第1關已完成
   const [completedLevels] = useState<Record<number, boolean>>({ 0: false });
@@ -59,10 +59,10 @@ export default function LevelSelectScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         
-        {/* 標題區 */}
+        
         <Text style={styles.headerTitle}>編程學院</Text>
         
-        {/* 狀態膠囊 */}
+   
         {statusMessage ? (
           <View style={styles.statusBadge}>
             <Text style={styles.statusText}> {statusMessage}</Text>
