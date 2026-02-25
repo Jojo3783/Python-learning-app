@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { apiService } from '../services/api';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,7 @@ const LEVELS = [
   { id: 3, name: '算術運算', color: '#ffcdd2' },
   { id: 4, name: '條件判斷', color: '#ffcdd2' },
   { id: 5, name: 'for迴圈', color: '#ffcdd2' },
+  { id: 6, name: 'for迴圈', color: '#ffcdd2' },
 ];
 
 export default function LevelSelectScreen() {
@@ -47,50 +48,52 @@ export default function LevelSelectScreen() {
   };
 
   return (
+    <ScrollView>
       <LinearGradient
-    // 設定漸層顏色：由深藍轉向極深黑藍，更有宇宙感
-    colors={['#1A237E', '#121858', '#0D1231']} style={styles.container}>
-      <Text style={styles.headerTitle}>請選擇關卡</Text>
-      {statusMessage && (
-        <Text style={styles.statusText}>{statusMessage}</Text>
-      )}
+      // 設定漸層顏色：由深藍轉向極深黑藍，更有宇宙感
+      colors={['#1A237E', '#121858', '#0D1231']} style={styles.container}>
+        <Text style={styles.headerTitle}>請選擇關卡</Text>
+        {statusMessage && (
+          <Text style={styles.statusText}>{statusMessage}</Text>
+        )}
 
-      {LEVELS.map((level, index: number) => {
-        const isCompleted = completedLevels[level.id];
-        const opacity = animations[index].interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
-        });
-        const translateY = animations[index].interpolate({
-          inputRange: [0, 1],
-          outputRange: [50, 0],
-        });
+        {LEVELS.map((level, index: number) => {
+          const isCompleted = completedLevels[level.id];
+          const opacity = animations[index].interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1],
+          });
+          const translateY = animations[index].interpolate({
+            inputRange: [0, 1],
+            outputRange: [50, 0],
+          });
 
-        return (
-          <Animated.View
-            key={level.id}
-            style={{
-              opacity,
-              transform: [{ translateY }],
-            }}
-          >
-            <TouchableOpacity
-              style={[
-                styles.levelBtn,
-                { backgroundColor: level.color },
-                isCompleted && styles.completedBtn,
-              ]}
-              onPress={() => handleLevelPress(index)}
+          return (
+            <Animated.View
+              key={level.id}
+              style={{
+                opacity,
+                transform: [{ translateY }],
+              }}
             >
-              <Text style={styles.checkMark}>
-                  第 {level.id} 關：{level.name}
-                {isCompleted && ' ✔️'}
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
-        );
-      })}
-    </LinearGradient>
+              <TouchableOpacity
+                style={[
+                  styles.levelBtn,
+                  { backgroundColor: level.color },
+                  isCompleted && styles.completedBtn,
+                ]}
+                onPress={() => handleLevelPress(index)}
+              >
+                <Text style={styles.checkMark}>
+                    第 {level.id} 關：{level.name}
+                  {isCompleted && ' ✔️'}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+          );
+        })}
+      </LinearGradient>
+    </ScrollView>
   );
 }
 
