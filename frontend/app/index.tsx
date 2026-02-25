@@ -43,7 +43,7 @@ export default function index() {
         <View style={styles.imageContainer}>
           <Animated.View style={[styles.bubbleContainer, { opacity: blinkAnim }]}>
             <View style={styles.bubble}>
-              <Text style={styles.bubbleText}>Hello Hello!!</Text>
+              <Text style={styles.bubbleText}>Hello Hello, I'm FundAi !!</Text>
             </View>
             <View style={styles.bubbleTail} />
           </Animated.View>
