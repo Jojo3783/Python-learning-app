@@ -15,7 +15,7 @@ export default function RootLayout() {
       <Stack.Screen 
         name="LevelSelectScreen" 
         options={({ navigation }) => ({ 
-          title: '關卡',
+          title: '首頁',
           headerShown: true,
           headerShadowVisible: false,
           headerTransparent: true, // 🌟 
@@ -38,6 +38,30 @@ export default function RootLayout() {
               <Text style={{ color: '#00E5FF', fontWeight: 'bold', fontSize: 16 }}>←</Text>
             </TouchableOpacity>
           ),
+        })}
+      />
+
+      <Stack.Screen 
+        name="GameScreen" 
+        options={({ navigation }) => ({
+          title: '關卡',
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: '#ffffff', 
+          },
+          headerTintColor: '#333333', 
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('LevelSelectScreen')} 
+              style={{ marginLeft: 15 }}
+            >
+              <Text style={{ color: '#00050a', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
+            </TouchableOpacity>
+          ),
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 18,
+          }
         })}
       />
 
