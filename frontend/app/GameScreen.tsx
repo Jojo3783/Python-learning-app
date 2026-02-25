@@ -66,7 +66,7 @@ export default function GameScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  container: { flex: 1, alignItems: 'center', justifyContent: 'flex-start', paddingTop: 60, paddingHorizontal: 20 },
   levelTitle: { fontSize: 28, fontWeight: 'bold' },
   monsterName: { fontSize: 24, fontWeight: 'bold', marginVertical: 10 },
   collapsibleContainer: {
