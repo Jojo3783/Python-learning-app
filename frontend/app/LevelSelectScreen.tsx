@@ -10,7 +10,7 @@ const LEVELS = [
   { id: 3, name: '算術運算', color: '#ffcdd2' },
   { id: 4, name: '條件判斷', color: '#ffcdd2' },
   { id: 5, name: 'for迴圈', color: '#ffcdd2' },
-  { id: 6, name: 'for迴圈', color: '#ffcdd2' },
+  { id: 6, name: 'while迴圈', color: '#ffcdd2' },
 ];
 
 export default function LevelSelectScreen() {

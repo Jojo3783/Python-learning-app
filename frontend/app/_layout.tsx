@@ -12,7 +12,18 @@ export default function RootLayout() {
       
       <Stack.Screen 
         name="LevelSelectScreen" 
-        options={{ title: '關卡' }} 
+        options={{ 
+          title: '關卡',
+          headerShadowVisible: false,
+          headerStyle: {
+            backgroundColor:'#1A237E',
+          },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 22,
+          }
+        }}
       />
 
       <Stack.Screen 
