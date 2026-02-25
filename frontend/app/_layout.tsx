@@ -18,7 +18,7 @@ export default function RootLayout() {
           title: '首頁',
           headerShown: true,
           headerShadowVisible: false,
-          headerTransparent: true, // 🌟 
+          headerTransparent: true, 
           headerStyle: {
             backgroundColor: 'transparent', // 配合透明
           },
@@ -35,7 +35,7 @@ export default function RootLayout() {
               onPress={() => navigation.navigate('index')} 
               style={{ marginLeft: 10 }}
             >
-              <Text style={{ color: '#00E5FF', fontWeight: 'bold', fontSize: 16 }}>←</Text>
+              <Text style={{ color: '#00E5FF', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
             </TouchableOpacity>
           ),
         })}

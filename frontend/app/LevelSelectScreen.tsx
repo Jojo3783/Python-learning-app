@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { apiService } from '../services/api';
 import { LinearGradient } from 'expo-linear-gradient';
 
-// 1. 定義關卡資料 (增加 icon 讓畫面更豐富，可自行調整)
+// 1. 定義關卡資料 
 const LEVELS = [
   { id: 1, name: '輸出 Hello world', color: '#4FC3F7' },
   { id: 2, name: '資料型態', color: '#9575CD' },
