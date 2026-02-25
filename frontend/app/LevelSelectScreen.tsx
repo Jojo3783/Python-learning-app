@@ -4,31 +4,37 @@ import { useRouter } from 'expo-router';
 import { apiService } from '../services/api';
 import { LinearGradient } from 'expo-linear-gradient';
 
+// 1. 定義關卡資料 (增加 icon 讓畫面更豐富，可自行調整)
 const LEVELS = [
-  { id: 1, name: '輸出Hello world', color: '#ffcdd2' },
-  { id: 2, name: '資料型態', color: '#ffcdd2' },
-  { id: 3, name: '算術運算', color: '#ffcdd2' },
-  { id: 4, name: '條件判斷', color: '#ffcdd2' },
-  { id: 5, name: 'for迴圈', color: '#ffcdd2' },
+  { id: 1, name: '輸出 Hello world', color: '#4FC3F7' },
+  { id: 2, name: '資料型態', color: '#9575CD' },
+  { id: 3, name: '算術運算', color: '#4DB6AC' },
+  { id: 4, name: '條件判斷', color: '#FF8A65' },
+  { id: 5, name: 'for 迴圈', color: '#F06292' },
+  { id: 6, name: 'while 迴圈', color: '#BA68C8' },
 ];
 
 export default function LevelSelectScreen() {
   const router = useRouter();
-  const [statusMessage, setStatusMessage] = useState('');
-  const [completedLevels, setCompletedLevels] = useState<Record<number, boolean>>({});
-  const [animations] = useState(LEVELS.map(() => new Animated.Value(0)));
+  const [statusMessage, setStatusMessage] = useState('衛星連線中...');
+  
+  // 這裡存放完成狀態，暫時預設第1關已完成
+  const [completedLevels] = useState<Record<number, boolean>>({ 0: false });
 
-  // API 連接測試
+  // 2. 動畫陣列初始化 (使用 Lazy Initializer 確保穩定)
+  const [animations] = useState(() => LEVELS.map(() => new Animated.Value(0)));
+
+  // 3. API 連接測試
   useEffect(() => {
     apiService.testConnection()
       .then(data => setStatusMessage(data.message))
-      .catch(err => setStatusMessage('API 連接失敗'));
+      .catch(() => setStatusMessage('連線失敗'));
   }, []);
 
-  // 進場動畫（關卡一個個浮上來）
+  // 4. 進場動畫 (stagger 讓按鈕一個個跳出來)
   useEffect(() => {
     Animated.stagger(
-      100,
+      80,
       animations.map(anim =>
         Animated.timing(anim, {
           toValue: 1,
@@ -47,24 +53,32 @@ export default function LevelSelectScreen() {
   };
 
   return (
-    <ScrollView>
-      <LinearGradient
-      // 設定漸層顏色：由深藍轉向極深黑藍，更有宇宙感
-      colors={['#1A237E', '#121858', '#0D1231']} style={styles.container}>
-        <Text style={styles.headerTitle}>請選擇關卡</Text>
-        {statusMessage && (
-          <Text style={styles.statusText}>{statusMessage}</Text>
-        )}
+    // 修正：LinearGradient flex: 1 確保填滿螢幕
+    <LinearGradient
+      colors={['#1A237E', '#121858', '#0D1231']}
+      style={styles.mainContainer}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        
+        {/* 標題區 */}
+        <Text style={styles.headerTitle}>編程學院</Text>
+        
+        {/* 狀態膠囊 */}
+        {statusMessage ? (
+          <View style={styles.statusBadge}>
+            <Text style={styles.statusText}> {statusMessage}</Text>
+          </View>
+        ) : null}
 
-        {LEVELS.map((level, index: number) => {
+        {/* 關卡列表 */}
+        {LEVELS.map((level, index) => {
           const isCompleted = completedLevels[level.id];
-          const opacity = animations[index].interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 1],
-          });
+          
+          // 動畫插值計算
+          const opacity = animations[index];
           const translateY = animations[index].interpolate({
             inputRange: [0, 1],
-            outputRange: [50, 0],
+            outputRange: [40, 0],
           });
 
           return (
@@ -73,99 +87,112 @@ export default function LevelSelectScreen() {
               style={{
                 opacity,
                 transform: [{ translateY }],
+                width: '100%',
+                alignItems: 'center',
               }}
             >
               <TouchableOpacity
                 style={[
                   styles.levelBtn,
-                  { backgroundColor: level.color },
+                  { borderLeftColor: level.color },
                   isCompleted && styles.completedBtn,
                 ]}
                 onPress={() => handleLevelPress(index)}
+                activeOpacity={0.7}
               >
-                <Text style={styles.checkMark}>
-                    第 {level.id} 關：{level.name}
-                  {isCompleted && ' ✔️'}
-                </Text>
+                <View style={styles.btnContent}>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.levelNumber}>MISSION {String(level.id).padStart(2, '0')}</Text>
+                    <Text style={styles.levelName}>第 {level.id} 關：{level.name}</Text>
+                  </View>
+                  
+                  {isCompleted && (
+                    <Text style={styles.checkMark}>✔️</Text>
+                  )}
+                </View>
               </TouchableOpacity>
             </Animated.View>
           );
         })}
-      </LinearGradient>
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
+  },
+  scrollContent: {
     alignItems: 'center',
     paddingTop: 60,
+    paddingBottom: 40,
   },
   headerTitle: {
     fontSize: 32,
     fontWeight: '900',
-    color: '#00E5FF', // 螢光藍：科技感
+    color: '#00E5FF',
     marginBottom: 10,
-    textShadowColor: 'rgba(0, 229, 255, 0.5)',
+    textShadowColor: 'rgba(0, 229, 255, 0.7)',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    textShadowRadius: 15,
   },
-  statusText: {
-    fontSize: 14,
-    color: '#BBDEFB',
-    marginBottom: 20,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+  statusBadge: {
+    backgroundColor: 'rgba(0, 229, 255, 0.1)',
     paddingHorizontal: 15,
     paddingVertical: 5,
-    borderColor: 'rgba(0, 229, 255, 0.3)',
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 229, 255, 0.2)',
+    marginBottom: 25,
+  },
+  statusText: {
+    fontSize: 13,
+    color: '#00E5FF',
+    fontWeight: 'bold',
   },
   levelBtn: {
     width: 340,
-    height: 90,
-    marginVertical: 12,
-    borderRadius: 20,
-    // 科技感裝飾：左側粗邊條
+    height: 85,
+    backgroundColor: '#FFFFFF',
+    marginVertical: 10,
+    borderRadius: 15,
     borderLeftWidth: 10,
-    // 陰影/發光效果
+    // 陰影
     elevation: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 5,
+    shadowRadius: 4,
   },
   btnContent: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     height: '100%',
-  },
-  iconText: {
-    fontSize: 35,
-    marginRight: 15,
+    position: 'relative',
   },
   textContainer: {
     flex: 1,
   },
   levelNumber: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#757575',
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#9E9E9E',
     letterSpacing: 1,
+    marginBottom: 2,
   },
   levelName: {
-    fontSize: 20,
+    fontSize: 19,
     fontWeight: 'bold',
     color: '#333',
   },
   checkMark: {
-    fontSize: 24,
-    marginLeft: 10,  // 數字越大越往右推
-    marginTop: 15,   // 數字越大越往下推
+    fontSize: 22,
+    position: 'absolute',
+    right: 20,
   },
   completedBtn: {
-    opacity: 0.6,
-    backgroundColor: '#E0E0E0',
+    opacity: 0.8,
   },
 });
