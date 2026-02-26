@@ -3,3 +3,4 @@ google-generativeai==0.8.6
 pydantic==2.12.5
 python-dotenv==1.2.1
 uvicorn==0.41.0
+sqlalchemy==2.0.47
