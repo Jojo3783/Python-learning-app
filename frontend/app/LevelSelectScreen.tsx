@@ -106,7 +106,7 @@ export default function LevelSelectScreen() {
                     </Text>
                     
                     {/* 6. 關卡名稱，鎖定時字體變暗 */}
-                    <Text style={[styles.levelName, { color: isLocked ? '#444' : '#333' }]}>
+                    <Text style={[styles.levelName, { color: isLocked ? '#8f8b8b' : '#333' }]}>
                       第 {level.id} 關：{level.name}
                     </Text>
                   </View>
