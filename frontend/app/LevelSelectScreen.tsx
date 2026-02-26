@@ -7,6 +7,7 @@
 
 //by FundAI
 
+import { UseLevel } from '../hooks/use-level';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';

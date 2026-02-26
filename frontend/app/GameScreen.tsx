@@ -160,7 +160,7 @@ export default function GameScreen() {
         <TextInput
           style={styles.codeInput}
           multiline={true}             // 允許換行
-          numberOfLines={4}            // 預設顯示幾行高度
+          numberOfLines={20}            // 預設顯示幾行高度
           placeholder="請在此輸入 Python 程式碼..."
           placeholderTextColor="#999"
           value={code}
