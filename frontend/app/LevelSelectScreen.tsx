@@ -1,11 +1,6 @@
-// 1. import { UseLevel } from '../hooks/use-level'; <-- 看你程式的資料夾，..代表回到上一個
-//    如果是(tabs)裡'../../hooks/use-level'
-// 2. 取出各項 const { level, setLevel, resetLevel } = useLevel(); 小括號裡可以選填名字，預設叫level
-// 3. level可得知目前進度，若要為level做更改請使用setLevel(這裡放數字)，呼叫resetLevel可以重設為1
-// p.s. setLevel算是一個物件，所以像是onclick後 必須寫成 () => setLevel(數字) 
-//     有問題再call我
+// 打開控制台，輸入這 localStorage.setItem('level', ' '); 按 Enter，然後重新整理網頁 就可以改你到等級幾
 
-//by FundAI
+
 
 import { useLevel } from '../hooks/use-level';
 import React, { useEffect, useState } from 'react';
