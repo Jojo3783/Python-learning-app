@@ -17,7 +17,7 @@ interface UseLevelReturn {
 }
 
 // 呼叫這個function後的小括號可以選填，填了可以創建另一個進度
-export function UseLevel(storageKey: string = 'level'): UseLevelReturn {
+export function useLevel(storageKey: string = 'level'): UseLevelReturn {
 
   const [level, setLevel] = useState<number>(() => {  // JS酷炫寫法，[level , setLevel] : level = [0] , setLevel = [1]
     // Lazy Initialization ， 只在第一次渲染讀取本機

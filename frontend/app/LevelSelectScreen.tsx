@@ -7,7 +7,7 @@
 
 //by FundAI
 
-import { UseLevel } from '../hooks/use-level';
+import { useLevel } from '../hooks/use-level';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -24,6 +24,7 @@ const LEVELS = [
 ];
 
 export default function LevelSelectScreen() {
+  const { level: currentProgress } = useLevel(); 
   const router = useRouter();
   const [statusMessage, setStatusMessage] = useState('連線中...');
   
@@ -80,49 +81,49 @@ export default function LevelSelectScreen() {
         ) : null}
 
         {/* 關卡列表 */}
-        {LEVELS.map((level, index) => {
-          const isCompleted = completedLevels[level.id];
-          
-          // 動畫插值計算
-          const opacity = animations[index];
-          const translateY = animations[index].interpolate({
-            inputRange: [0, 1],
-            outputRange: [40, 0],
-          });
+        {LEVELS.map((level, index: number) => {
+         // 3. 核心判斷：如果關卡的 id 大於目前的進度，就是「鎖定」
+          const isLocked = level.id > currentProgress;
+          // 如果關卡的 id 小於目前的進度，就是「已完成」
+          const isCompleted = level.id < currentProgress;
 
           return (
-            <Animated.View
-              key={level.id}
-              style={{
-                opacity,
-                transform: [{ translateY }],
-                width: '100%',
-                alignItems: 'center',
-              }}
-            >
+            <Animated.View key={level.id} style={{ opacity: animations[index] }}>
               <TouchableOpacity
+                // 4. 鎖定時禁用按鈕，點了沒反應
+                disabled={isLocked}
                 style={[
                   styles.levelBtn,
-                  { borderLeftColor: level.color },
-                  isCompleted && styles.completedBtn,
+                  { 
+                    // 鎖定時側邊條變灰色，沒鎖定用原本顏色
+                    borderLeftColor: isLocked ? '#555' : level.color, 
+                    // 鎖定時背景變深色 (符合你的科技感)，沒鎖定用白色
+                    backgroundColor: isLocked ? 'rgba(255,255,255,0.1)' : '#FFFFFF' 
+                  }
                 ]}
                 onPress={() => handleLevelPress(index)}
-                activeOpacity={0.7}
               >
                 <View style={styles.btnContent}>
                   <View style={styles.textContainer}>
-                    <Text style={styles.levelNumber}>MISSION {String(level.id).padStart(2, '0')}</Text>
-                    <Text style={styles.levelName}>第 {level.id} 關：{level.name}</Text>
+                    {/* 5. 顯示 Mission 編號，鎖定時加上鎖頭 */}
+                    <Text style={[styles.levelNumber, { color: isLocked ? '#666' : '#9E9E9E' }]}>
+                      MISSION {String(level.id).padStart(2, '0')} {isLocked && '🔒'}
+                    </Text>
+                    
+                    {/* 6. 關卡名稱，鎖定時字體變暗 */}
+                    <Text style={[styles.levelName, { color: isLocked ? '#444' : '#333' }]}>
+                      第 {level.id} 關：{level.name}
+                    </Text>
                   </View>
+
+                  {/* 7. 已完成的顯示勾勾 */}
                   
-                  {isCompleted && (
-                    <Text style={styles.checkMark}>✔️</Text>
-                  )}
                 </View>
               </TouchableOpacity>
             </Animated.View>
           );
         })}
+
       </ScrollView>
     </LinearGradient>
   );
