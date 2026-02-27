@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   aiContainer: { alignSelf: 'flex-start' },
   userContainer: { alignSelf: 'flex-end' },
   avatarMini: { fontSize: 20, marginRight: 8, marginBottom: 5 },
-  bubble: { padding: 12, borderRadius: 20, maxWidth: '85%' },
+  bubble: { padding: 12, borderRadius: 20, maxWidth: '100%' },
   aiBubble: { backgroundColor: '#FFF', borderBottomLeftRadius: 4, elevation: 1, shadowColor: '#000', shadowOpacity: 0.05 },
   userBubble: { backgroundColor: '#4A90E2', borderBottomRightRadius: 4 },
   msgText: { fontSize: 16, lineHeight: 22 },

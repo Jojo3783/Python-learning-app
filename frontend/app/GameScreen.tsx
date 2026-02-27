@@ -1,40 +1,11 @@
 {/* todo list */}
 // 點一個地方可以開一個新的頁面 可以跟ＡＩ communication (非即時，有cd時間，不是想問就問)
 //程式碼送出以後會進入 新頁面（會出現AC WA等等，結果  還有AI 點出問題）（成功之後要鎖程式畫面）
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState,  useEffect} from 'react';
 import { View, Text, StyleSheet, Button, Alert, TextInput, TouchableOpacity, ScrollView, Dimensions, PanResponder  } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import {LEVELS} from "./LEVELS";
 
-
-const windowHeight = Dimensions.get('window').height;
-
-const CollapsibleBox = ({ title, content } : any) => {
-  // 1. 這是開關：預設是 false (關起來)
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-      <View style={styles.collapsibleContainer}>
-        {/* 2. 這是標題按鈕：點一下切換開關 */}
-        <TouchableOpacity 
-          style={styles.collapsibleHeader} 
-          onPress={() => setIsOpen(!isOpen)} // !isOpen 代表「反過來」 (開變關，關變開)
-        >
-          {/* 這裡用三元運算子來決定箭頭方向 */}
-          <Text style={styles.collapsibleTitle}>
-            {isOpen ? '▼' : '▶'} {title}
-          </Text>
-        </TouchableOpacity>
-
-        {/* 3. 這是內容：只有當 isOpen 為 true 時才畫出來 */}
-        {isOpen && (
-          <View style={styles.collapsibleContent}>
-            <Text style={styles.contentText}>{content}</Text>
-          </View>
-        )}
-      </View>
-  );
-};
 
 export default function GameScreen() {
   const navigation = useNavigation();
@@ -42,24 +13,8 @@ export default function GameScreen() {
   const { targetLevelIndex } = useLocalSearchParams();
   const [code, setCode] = useState('');
   const currentLevel = LEVELS[Number(targetLevelIndex)];
-  const levelIndex = targetLevelIndex ? Number(targetLevelIndex) : 0;
-  const [topHeight, setTopHeight] = useState(windowHeight * 0.4);
   // 用來記錄目前選中的是哪個頁籤，預設是 'description' (題目描述)
   const [activeTab, setActiveTab] = useState('description');
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (event, gestureState) => {
-        // 減去上方 Header 大約的高度
-        let newHeight = gestureState.moveY - 80; 
-        // 限制拖曳範圍：最少 100，最多不超過螢幕 80%
-        if (newHeight >= 100 && newHeight <= windowHeight * 0.8) {
-          setTopHeight(newHeight);
-        }
-      },
-    })
-  ).current;
 
   useEffect(() => {
     navigation.setOptions({
