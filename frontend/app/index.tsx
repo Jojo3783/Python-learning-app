@@ -1,5 +1,6 @@
 {/* todo list */}
 // 那隻fundAi要生動一點
+// 當螢幕縮放時,fundai的文字會跑掉(jojo處理中)
 
 // first page  (welcome page)
 import React, { useEffect, useRef } from 'react';
