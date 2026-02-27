@@ -6,6 +6,10 @@ from pydantic import BaseModel
 from typing import Optional
 # 這裡匯入服務
 from services.gemini_service import get_gemini_response
+import models
+from database import engine, DBSession
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="虛擬教室 API")
 
@@ -16,6 +20,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def get_db():
+    db = DBSession()
+    try:
+        yield db
+    finally:
+        db.close()
 
 class ChatRequest(BaseModel):
     message: str
