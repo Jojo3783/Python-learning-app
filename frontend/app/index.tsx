@@ -1,3 +1,6 @@
+{/* todo list */}
+// 那隻fundAi要生動一點
+
 // first page  (welcome page)
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';

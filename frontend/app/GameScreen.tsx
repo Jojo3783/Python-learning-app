@@ -1,3 +1,7 @@
+{/* todo list */}
+// 點一個地方可以開一個新的頁面 可以跟ＡＩ communication (非即時，有cd時間，不是想問就問)
+//程式碼送出以後會進入 新頁面（會出現AC WA等等，結果  還有AI 點出問題）（成功之後要鎖程式畫面）
+
 import React, {useState, useRef} from 'react';
 import { View, Text, StyleSheet, Button, Alert, TextInput, TouchableOpacity, ScrollView, Dimensions, PanResponder  } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
