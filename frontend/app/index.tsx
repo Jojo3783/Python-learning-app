@@ -4,58 +4,67 @@
 
 // first page  (welcome page)
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { useRouter } from 'expo-router'; 
-import { Animated } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const blinkAnim = useRef(new Animated.Value(0.3)).current; // 初始透明度 0.3
-
-useEffect(() => {
-  // 建立呼吸燈循環動畫
-  Animated.loop(
-    Animated.sequence([
-      Animated.timing(blinkAnim, {
-        toValue: 1,      // 變亮
-        duration: 1200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(blinkAnim, {
-        toValue: 0.15,    // 變暗
-        duration: 1200,
-        useNativeDriver: true,
-      }),
-    ])
-  ).start();
-}, []);
 
 
 
 export default function index() {
   const router = useRouter(); 
+  const insets = useSafeAreaInsets();
+  const blinkAnim = useRef(new Animated.Value(0.3)).current; // 初始透明度 0.3
 
+  useEffect(() => {
+    // 建立呼吸燈循環動畫
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(blinkAnim, {
+          toValue: 1,      // 變亮
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(blinkAnim, {
+          toValue: 0.15,    // 變暗
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.backgroundColor }]}>
+    <View style={[
+      styles.container,
+      { 
+        backgroundColor: themeColors.backgroundColor,
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom 
+      }
+    ]}>
       <View style={styles.content}>
         
-       
         <Text style={styles.title}>
           Start Your Learning Journey Here!
         </Text>
 
         
         <View style={styles.imageContainer}>
-          <Animated.View style={[styles.bubbleContainer, { opacity: blinkAnim }]}>
-            <View style={styles.bubble}>
-              <Text style={styles.bubbleText}>Hello Hello, I'm FundAi !!</Text>
-            </View>
-            <View style={styles.bubbleTail} />
-          </Animated.View>
-          <Image 
-             source={require("../assets/images/TA.png")} 
-            style={{ width: 500, height: 500 }} 
-            resizeMode="contain" 
-          />
+          <View style={styles.imageWrapper}>
+            {/* 恢復你原本的透明度動畫與傾斜角度 */}
+            <Animated.View style={[styles.bubbleContainer, { opacity: blinkAnim }]}>
+              <View style={styles.bubble}>
+                <Text style={styles.bubbleText}>Hello Hello, I'm FundAi !!</Text>
+              </View>
+              <View style={styles.bubbleTail} />
+            </Animated.View>
+            
+            <Image 
+              source={require("../assets/images/TA.png")} 
+              style={styles.characterImage} 
+              resizeMode="contain" 
+            />
+          </View>
         </View>
 
 
@@ -95,7 +104,7 @@ export default function index() {
         </View>
 
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -125,6 +134,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',          
     marginTop: 20,
   },
+  imageWrapper: {
+    width: 320,
+    height: 320,
+  },
+  characterImage: {
+    width: '100%',
+    height: '100%',
+  },
   imageContainer: {
     width: '100%',        // 讓容器佔滿寬度
     alignItems: 'center',  // 讓內部的 Image 置中
@@ -153,8 +170,8 @@ const styles = StyleSheet.create({
   },
  bubbleContainer: {
     position: 'absolute',
-    top: 50,           // 距離頂部的位置，數字越小越往上
-    right: 550,         // 距離右邊的位置，數字越小越往右
+    top: "5%",           // 距離頂部的位置，數字越小越往上
+    right: "0%",         // 距離右邊的位置，數字越小越往右
     alignItems: 'center',
     zIndex: 10,
     // 讓對話框稍微傾斜一點點，看起來更活潑
