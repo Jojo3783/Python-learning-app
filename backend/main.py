@@ -22,11 +22,14 @@ class ChatRequest(BaseModel):
     level: int = 1
     code: Optional[str] = None
 
+# AI response(message, level, code)
 @app.post("/api/chat")
 async def chat_with_gemini(request: ChatRequest):
     try:
-        # 呼叫 services 裡的函式
-        result = get_gemini_response(request.message, request.level)
+        result = get_gemini_response(request.message, request.level, request.code)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# Check the submitted code
+# TODO: @app.post("/api/submit")

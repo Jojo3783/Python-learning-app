@@ -10,3 +10,4 @@ class Question(Base):
     description = Column(String)  # 題目敘述
     content = Column(String)  # 題目                    
     correct_answer = Column(String) # 答案
+    required_tokens = Column(String, default="") # default: "print" or "for,range"
