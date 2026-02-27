@@ -1,4 +1,4 @@
-# backend/services/gemini_service.py
+# backend/services/ai_service.py
 import os
 import json
 import google.generativeai as genai
@@ -18,7 +18,7 @@ def get_gemini_response(message: str, level: int):
     if not api_key:
         raise Exception("API Key missing")
 
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-2.5-flash')
     
     prompt = f"""
     你是一位針對兒童設計的 Python 程式設計家教，你的名字是「fundAi老師」。

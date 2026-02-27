@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 # 這裡匯入服務
-from services.ai_service import get_gemini_response 
+from services.gemini_service import get_gemini_response
 
 app = FastAPI(title="虛擬教室 API")
 
