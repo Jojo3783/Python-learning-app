@@ -29,14 +29,8 @@ export default function LevelSelectScreen() {
   // 2. 動畫陣列初始化 (使用 Lazy Initializer 確保穩定)
   const [animations] = useState(() => LEVELS.map(() => new Animated.Value(0)));
 
-  // 3. API 連接測試
-  useEffect(() => {
-    apiService.testConnection()
-      .then(data => setStatusMessage(data.message))
-      .catch(() => setStatusMessage('連線失敗'));
-  }, []);
 
-  // 4. 進場動畫 (stagger 讓按鈕一個個跳出來)
+  // 3. 進場動畫 (stagger 讓按鈕一個個跳出來)
   useEffect(() => {
     Animated.stagger(
       80,
@@ -69,11 +63,9 @@ export default function LevelSelectScreen() {
         <Text style={styles.headerTitle}>編程學院</Text>
         
    
-        {statusMessage ? (
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}> {statusMessage}</Text>
-          </View>
-        ) : null}
+        <View style={styles.statusBadge}>
+          <Text style = {styles.statusText}>GoGo</Text>
+        </View>
 
         {/* 關卡列表 */}
         {LEVELS.map((level, index: number) => {

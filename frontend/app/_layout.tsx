@@ -11,6 +11,23 @@ export default function RootLayout() {
         name="index" 
         options={{ headerShown: false }} 
       />
+
+      <Stack.Screen 
+        name="ChatScreen" 
+        options={({ navigation }) => ({
+          title: '剛剛der地方',
+          headerShown: true,
+          // headerLeft: () => (
+          //   <TouchableOpacity 
+          //     onPress={() => navigation.navigate('GameScreen')} 
+          //     style={{ marginLeft: 15 }}
+          //   >
+          //     <Text style={{ color: '#00050a', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
+          //   </TouchableOpacity>
+          // ),
+        })}
+
+      />
       
       <Stack.Screen 
         name="LevelSelectScreen" 
@@ -58,6 +75,7 @@ export default function RootLayout() {
               <Text style={{ color: '#00050a', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
             </TouchableOpacity>
           ),
+          
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 18,

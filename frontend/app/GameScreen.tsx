@@ -1,11 +1,11 @@
 {/* todo list */}
 // 點一個地方可以開一個新的頁面 可以跟ＡＩ communication (非即時，有cd時間，不是想問就問)
 //程式碼送出以後會進入 新頁面（會出現AC WA等等，結果  還有AI 點出問題）（成功之後要鎖程式畫面）
-
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import { View, Text, StyleSheet, Button, Alert, TextInput, TouchableOpacity, ScrollView, Dimensions, PanResponder  } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import {LEVELS} from "./LEVELS";
+
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -37,6 +37,7 @@ const CollapsibleBox = ({ title, content } : any) => {
 };
 
 export default function GameScreen() {
+  const navigation = useNavigation();
   const router = useRouter();
   const { targetLevelIndex } = useLocalSearchParams();
   const [code, setCode] = useState('');
@@ -59,6 +60,32 @@ export default function GameScreen() {
       },
     })
   ).current;
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity 
+          onPress={() => router.push({
+            pathname: '/ChatScreen',
+            params: { targetLevelIndex: targetLevelIndex } // 把關卡參數傳給老師頁面
+          })} 
+          style={{ 
+            marginRight: 15, 
+            backgroundColor: '#cab8a2', 
+            paddingHorizontal: 12, 
+            paddingVertical: 6, 
+            borderRadius: 20,
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}
+        >
+          <Text style={{ color: '#170c52', fontWeight: 'bold', fontSize: 14 }}>
+            🌟 問老師
+          </Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, targetLevelIndex]); // 當 navigation 或 index 改變時重新設定
   
   const handleWin = () => {
     Alert.alert(`你完成了${currentLevel.id}關`);
