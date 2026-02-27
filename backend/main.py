@@ -2,6 +2,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+# 選填用
+from typing import Optional
 # 這裡匯入服務
 from services.gemini_service import get_gemini_response
 
@@ -18,6 +20,7 @@ app.add_middleware(
 class ChatRequest(BaseModel):
     message: str
     level: int = 1
+    code: Optional[str] = None
 
 @app.post("/api/chat")
 async def chat_with_gemini(request: ChatRequest):
