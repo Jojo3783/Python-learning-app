@@ -49,7 +49,7 @@ export default function index() {
         </Text>
 
         
-        <View style={styles.imageContainer}>
+       <View style={[styles.imageContainer, { transform: [{ scale: 1.5 }] }]}>
           <View style={styles.imageWrapper}>
             {/* 恢復你原本的透明度動畫與傾斜角度 */}
             <Animated.View style={[styles.bubbleContainer, { opacity: blinkAnim }]}>
