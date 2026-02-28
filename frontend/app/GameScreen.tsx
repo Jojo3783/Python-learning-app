@@ -52,30 +52,24 @@ export default function GameScreen() {
       {/* ========================================== */}
       {/* 1. 頂部頁籤列 (Tab Bar) */}
       {/* ========================================== */}
-      <View style={styles.tabBarContainer}>
-        {/* 標籤 1：觀念提示 */}
-        <TouchableOpacity 
-          style={[styles.tabItem, activeTab === 'hint' && styles.activeTabItem]} 
-          onPress={() => setActiveTab('hint')}
-        >
-          <Text style={[styles.tabText, activeTab === 'hint' && styles.activeTabText]}>💡 觀念提示</Text>
-        </TouchableOpacity>
-        {/* 標籤 2：題目描述 */}
-        <TouchableOpacity 
-          style={[styles.tabItem, activeTab === 'description' && styles.activeTabItem]} 
-          onPress={() => setActiveTab('description')}
-        >
-          <Text style={[styles.tabText, activeTab === 'description' && styles.activeTabText]}>📄 題目描述</Text>
-        </TouchableOpacity>
+      <View style={styles.leftPanel}>
+        <View style={styles.tabBarContainer}>
+          {/* 標籤 1：觀念提示 */}
+          <TouchableOpacity 
+            style={[styles.tabItem, activeTab === 'hint' && styles.activeTabItem]} 
+            onPress={() => setActiveTab('hint')}
+          >
+            <Text style={[styles.tabText, activeTab === 'hint' && styles.activeTabText]}>💡 觀念提示</Text>
+          </TouchableOpacity>
+          {/* 標籤 2：題目描述 */}
+          <TouchableOpacity 
+            style={[styles.tabItem, activeTab === 'description' && styles.activeTabItem]} 
+            onPress={() => setActiveTab('description')}
+          >
+            <Text style={[styles.tabText, activeTab === 'description' && styles.activeTabText]}>📄 題目描述</Text>
+          </TouchableOpacity>
 
-        {/* 標籤 3：撰寫程式 (取代原本的紀錄) */}
-        <TouchableOpacity 
-          style={[styles.tabItem, activeTab === 'code' && styles.activeTabItem]} 
-          onPress={() => setActiveTab('code')}
-        >
-          <Text style={[styles.tabText, activeTab === 'code' && styles.activeTabText]}>💻 撰寫程式</Text>
-        </TouchableOpacity>
-      </View>
+        </View>
 
       {/* ========================================== */}
       {/* 2. 內容顯示區 (根據選中的標籤切換畫面) */}
@@ -98,30 +92,30 @@ export default function GameScreen() {
             <Text style={styles.contentText}>{currentLevel.description}</Text>
           </ScrollView>
         )}
-
-        {/* --- 當點擊「撰寫程式」時顯示 --- */}
-        {activeTab === 'code' && (
-          // 這個 View 用來包住輸入框和按鈕，並加上 flex: 1 填滿畫面
-          <View style={styles.codeTabContainer}>
-            <View style={styles.codeEditorContainer}>
-              <TextInput
-                style={styles.codeInput} 
-                multiline={true}
-                placeholder="請在此輸入 Python 程式碼..."
-                placeholderTextColor="#999"
-                value={code}
-                onChangeText={setCode}
-                autoCapitalize="none"
-                autoCorrect={false}
-                textAlignVertical="top"
-              />
-            </View>
-            <Button title="提交程式" onPress={handleWin} />
-          </View>
-        )}
-
+        </View>
       </View>
+      <View style={styles.rightPanel}>
+        
+        <View style={styles.codeHeader}>
+          <Text style={styles.codeTitle}>💻 撰寫 Python 程式碼</Text>
+        </View>
 
+        <View style={styles.codeEditorContainer}>
+          <TextInput
+            style={styles.codeInput} 
+            multiline={true}
+            placeholder="請在此輸入 Python 程式碼..."
+            placeholderTextColor="#999"
+            value={code}
+            onChangeText={setCode}
+            autoCapitalize="none"
+            autoCorrect={false}
+            textAlignVertical="top"
+          />
+        </View>
+        
+        <Button title="送出批改" onPress={handleWin} color="#4CAF50" />
+      </View>
     </View>
   );
 }
@@ -142,6 +136,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1, // 讓內容區填滿頁籤下方的所有空間
     padding: 20,
+    
   },
   activeTabItem: {
     // 當選中時，底部會有一條亮藍色的線！
@@ -153,12 +148,32 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  leftPanel: {
+    flex: 1, // 拿走一半的空間
+    borderRightWidth: 1, // 右邊畫一條分隔線
+    borderColor: '#E0E0E0',
+    backgroundColor: '#FAFAFA',
+  },
+  rightPanel: {
+    flex: 1, // 拿走另一半的空間
+    padding: 15,
+    backgroundColor: '#F0F0F0', // 給一個稍微不一樣的底色
+  },
+  codeHeader: {
+    marginBottom: 10,
+  },
+  codeTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
   activeTabText: {
     color: '#fff', // 選中時變成純白色
   },
   mainContainer: {
     flex: 1,
     backgroundColor: '#fff',
+    flexDirection: 'row', // 🌟 這是左右分屏的關鍵！
   },
   
   // 上半部樣式
