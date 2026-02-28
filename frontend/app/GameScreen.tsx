@@ -48,10 +48,7 @@ export default function GameScreen() {
 
   return (
     <View style={styles.mainContainer}>
-      
-      {/* ========================================== */}
-      {/* 1. 頂部頁籤列 (Tab Bar) */}
-      {/* ========================================== */}
+      {/*左半邊*/}
       <View style={styles.leftPanel}>
         <View style={styles.tabBarContainer}>
           {/* 標籤 1：觀念提示 */}
@@ -71,29 +68,29 @@ export default function GameScreen() {
 
         </View>
 
-      {/* ========================================== */}
-      {/* 2. 內容顯示區 (根據選中的標籤切換畫面) */}
-      {/* ========================================== */}
-      <View style={styles.contentContainer}>
+        <View style={styles.contentContainer}>
         
-        {/* 標題永遠顯示在最上面 */}
-        <Text style={styles.levelTitle}>第 {currentLevel.id} 關</Text>
+          {/* 標題永遠顯示在最上面 */}
+          <Text style={styles.levelTitle}>第 {currentLevel.id} 關</Text>
 
-        {/* --- 當點擊「題目描述」時顯示 --- */}
-        {activeTab === 'description' && (
-          <ScrollView>
-            <Text style={styles.contentText}>{currentLevel.question}</Text>
-          </ScrollView>
-        )}
+          {/* --- 當點擊「題目描述」時顯示 --- */}
+          {activeTab === 'description' && (
+            <ScrollView>
+              <Text style={styles.contentText}>{currentLevel.question}</Text>
+            </ScrollView>
+          )}
 
-        {/* --- 當點擊「觀念提示」時顯示 --- */}
-        {activeTab === 'hint' && (
-          <ScrollView>
-            <Text style={styles.contentText}>{currentLevel.description}</Text>
-          </ScrollView>
-        )}
+          {/* --- 當點擊「觀念提示」時顯示 --- */}
+          {activeTab === 'hint' && (
+            <ScrollView>
+              <Text style={styles.contentText}>{currentLevel.description}</Text>
+            </ScrollView>
+          )}
         </View>
       </View>
+
+
+      {/*右半邊*/}
       <View style={styles.rightPanel}>
         
         <View style={styles.codeHeader}>
@@ -103,19 +100,20 @@ export default function GameScreen() {
         <View style={styles.codeEditorContainer}>
           <TextInput
             style={styles.codeInput} 
-            multiline={true}
-            placeholder="請在此輸入 Python 程式碼..."
-            placeholderTextColor="#999"
-            value={code}
-            onChangeText={setCode}
-            autoCapitalize="none"
-            autoCorrect={false}
+            multiline={true}//可以多行
+            placeholder="請在此輸入 Python 程式碼..."//標題
+            placeholderTextColor="#999"//標題顏色
+            value={code}//儲存裡面的文字
+            onChangeText={setCode}//文字改變時update code
+            autoCapitalize="none"//關掉自動大寫
+            autoCorrect={false}//自動拼寫修正
             textAlignVertical="top"
           />
         </View>
         
         <Button title="送出批改" onPress={handleWin} color="#4CAF50" />
       </View>
+
     </View>
   );
 }

@@ -7,12 +7,12 @@ export default function RootLayout() {
   return (
     <Stack>
      
-      <Stack.Screen 
+      <Stack.Screen // homepage
         name="index" 
-        options={{ headerShown: false }} 
+        options={{ headerShown: false }} // no header
       />
 
-      <Stack.Screen 
+      <Stack.Screen //AI chatbot
         name="ChatScreen" 
         options={({ navigation }) => ({
           title: '剛剛der地方',
@@ -29,7 +29,7 @@ export default function RootLayout() {
 
       />
       
-      <Stack.Screen 
+      <Stack.Screen //levelselect page
         name="LevelSelectScreen" 
         options={({ navigation }) => ({ 
           title: '首頁',
@@ -47,7 +47,7 @@ export default function RootLayout() {
             textShadowRadius: 10,
           },
           //  強制加入左側按鈕，解決重新整理消失的問題
-          headerLeft: () => (
+          headerLeft: () => (// 返回鍵
             <TouchableOpacity 
               onPress={() => navigation.navigate('index')} 
               style={{ marginLeft: 10 }}
@@ -58,7 +58,7 @@ export default function RootLayout() {
         })}
       />
 
-      <Stack.Screen 
+      <Stack.Screen //game page
         name="GameScreen" 
         options={({ navigation }) => ({
           title: '關卡',
@@ -67,7 +67,7 @@ export default function RootLayout() {
             backgroundColor: '#ffffff', 
           },
           headerTintColor: '#333333', 
-          headerLeft: () => (
+          headerLeft: () => (// 返回鍵
             <TouchableOpacity 
               onPress={() => navigation.navigate('LevelSelectScreen')} 
               style={{ marginLeft: 15 }}
@@ -83,12 +83,12 @@ export default function RootLayout() {
         })}
       />
 
-      <Stack.Screen 
+      <Stack.Screen // currently not use
         name="LoginScreen" 
         options={{ title: '會員登入' }} 
       />
       
-      <Stack.Screen 
+      <Stack.Screen // currently not use
         name="SignUpScreen" 
         options={{ title: '註冊new account' }} 
       />
