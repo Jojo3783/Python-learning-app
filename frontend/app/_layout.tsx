@@ -16,15 +16,10 @@ export default function RootLayout() {
         name="ChatScreen" 
         options={({ navigation }) => ({
           title: '剛剛der地方',
-          headerShown: true,
-          // headerLeft: () => (
-          //   <TouchableOpacity 
-          //     onPress={() => navigation.navigate('GameScreen')} 
-          //     style={{ marginLeft: 15 }}
-          //   >
-          //     <Text style={{ color: '#00050a', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
-          //   </TouchableOpacity>
-          // ),
+          headerStyle: {
+            backgroundColor: '#0A0E14', 
+          },
+          headerTintColor: '#00FFFF',
         })}
 
       />

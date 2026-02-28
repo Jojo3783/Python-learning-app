@@ -52,7 +52,7 @@ export default function ChatScreen() {
           })} 
           style={{ marginLeft: 15 }}
         >
-          <Text style={{ color: '#00050a', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
+          <Text style={{ color: '#00FFFF', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
         </TouchableOpacity>
       ),
     });
@@ -174,29 +174,165 @@ export default function ChatScreen() {
   );
 }
 
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FB' },
-  headerTeacher: { flexDirection: 'row', alignItems: 'center', padding: 15, backgroundColor: '#FFF', borderBottomWidth: 1, borderBottomColor: '#EEE' },
-  headerAvatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#F0F7FF', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  headerName: { fontWeight: 'bold', fontSize: 16, color: '#333' },
-  headerStatus: { fontSize: 12, color: '#4A90E2' },
-  listContent: { paddingHorizontal: 15, paddingVertical: 20 },
-  bubbleContainer: { flexDirection: 'row', marginVertical: 8, alignItems: 'flex-end' },
-  aiContainer: { alignSelf: 'flex-start' },
-  userContainer: { alignSelf: 'flex-end' },
-  avatarMini: { fontSize: 20, marginRight: 8, marginBottom: 5 },
-  bubble: { padding: 12, borderRadius: 20, maxWidth: '100%' },
-  aiBubble: { backgroundColor: '#FFF', borderBottomLeftRadius: 4, elevation: 1, shadowColor: '#000', shadowOpacity: 0.05 },
-  userBubble: { backgroundColor: '#4A90E2', borderBottomRightRadius: 4 },
-  msgText: { fontSize: 16, lineHeight: 22 },
-  aiText: { color: '#444' },
-  userText: { color: '#FFF' },
-  bottomArea: { backgroundColor: '#FFF', padding: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 },
-  suggestionRow: { flexDirection: 'row', marginBottom: 10, justifyContent: 'center' },
-  suggestBtn: { backgroundColor: '#F0F4F8', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 15, marginHorizontal: 4, borderWidth: 1, borderColor: '#DDE6ED' },
-  suggestText: { fontSize: 13, color: '#556' },
-  inputRow: { flexDirection: 'row', alignItems: 'center' },
-  input: { flex: 1, backgroundColor: '#F2F2F2', borderRadius: 25, paddingHorizontal: 15, height: 45 },
-  sendBtn: { marginLeft: 10, backgroundColor: '#4A90E2', paddingHorizontal: 20, height: 45, borderRadius: 25, justifyContent: 'center' },
-  sendBtnText: { color: '#FFF', fontWeight: 'bold' }
+  container: {
+    flex: 1,
+    backgroundColor: '#0A0E14', 
+  },
+  
+  
+  headerTeacher: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 255, 255, 0.3)', // 青色發光邊界
+    marginHorizontal: 15,
+    marginTop: 15,
+    borderRadius: 20,
+    // 螢光陰影效果 (iOS)
+    shadowColor: '#00FFFF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    // Android 陰影
+    elevation: 10,
+  },
+  headerAvatar: {
+    width: 65,
+    height: 65,
+    borderRadius: 32.5,
+    backgroundColor: '#16213E',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#00FFFF', // 老師頭像外圈發光
+  },
+  headerName: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#FFF',
+    marginLeft: 15,
+    letterSpacing: 1.5,
+    textShadowColor: 'rgba(0, 255, 255, 0.8)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
+  },
+  headerStatus: {
+    fontSize: 13,
+    color: '#00FFFF', // 青色字體
+    marginLeft: 15,
+    marginTop: 4,
+    fontWeight: '600',
+  },
+  
+  // 聊天區域
+  listContent: {
+    padding: 20,
+  },
+  bubbleContainer: {
+    flexDirection: 'row',
+    marginBottom: 24,
+    alignItems: 'flex-end',
+  },
+  userContainer: {
+    justifyContent: 'flex-end',
+  },
+  aiContainer: {
+    justifyContent: 'flex-start',
+  },
+  avatarMini: {
+    fontSize: 24,
+    marginRight: 10,
+    textShadowColor: '#00FFFF',
+    textShadowRadius: 8,
+  },
+  
+  // 氣泡樣式：數位視窗感
+  bubble: {
+    maxWidth: '85%',
+    padding: 14,
+    borderRadius: 20,
+  },
+  aiBubble: {
+    backgroundColor: 'rgba(30, 41, 59, 0.8)', // 深色半透明
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 0,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 255, 255, 0.2)',
+  },
+  userBubble: {
+    backgroundColor: '#4338CA', 
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 0,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  msgText: {
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: 0.5,
+  },
+  aiText: {
+    color: '#E2E8F0', 
+  },
+  userText: {
+    color: '#FFFFFF',
+    fontWeight: '500',
+  },
+
+  
+  bottomArea: {
+    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+    padding: 18,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 255, 255, 0.3)',
+  },
+  suggestionRow: {
+    flexDirection: 'row',
+    marginBottom: 15,
+    flexWrap: 'wrap',
+  },
+  suggestBtn: {
+    backgroundColor: 'transparent',
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 12,
+    margin: 4,
+    borderWidth: 1,
+    borderColor: '#4338CA',
+  },
+  suggestText: {
+    color: '#A5B4FC',
+    fontSize: 13,
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 15,
+    paddingHorizontal: 15,
+    height: 55,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  input: {
+    flex: 1,
+    color: '#FFF',
+    fontSize: 16,
+  },
+  sendBtn: {
+    backgroundColor: '#00FFFF',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginLeft: 10,
+  },
+  sendBtnText: {
+    color: '#0A0E14',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
 });
