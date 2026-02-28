@@ -94,7 +94,7 @@ export default function GameScreen() {
       <View style={styles.rightPanel}>
         
         <View style={styles.codeHeader}>
-          <Text style={styles.codeTitle}>💻 撰寫 Python 程式碼</Text>
+          <Text style={styles.codeTitle}>撰寫 Python Code</Text>
         </View>
 
         <View style={styles.codeEditorContainer}>
@@ -150,12 +150,12 @@ const styles = StyleSheet.create({
     flex: 1, // 拿走一半的空間
     borderRightWidth: 1, // 右邊畫一條分隔線
     borderColor: '#E0E0E0',
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#2d2d2d',
   },
   rightPanel: {
     flex: 1, // 拿走另一半的空間
     padding: 15,
-    backgroundColor: '#F0F0F0', // 給一個稍微不一樣的底色
+    backgroundColor: '#242121', // 給一個稍微不一樣的底色
   },
   codeHeader: {
     marginBottom: 10,
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   codeTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#ffffff',
   },
   activeTabText: {
     color: '#fff', // 選中時變成純白色
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     fontSize: 28, 
     fontWeight: 'bold',
     marginBottom: 10,
-    color: '#333'
+    color: '#ffffff'
   },
   
   // 分隔線樣式
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   },
   contentText: {
     fontSize: 14,
-    color: '#555',
+    color: '#ebe5e5',
     lineHeight: 20, // 行高，讓文字不要擠在一起
   },
   codeEditorContainer: {
