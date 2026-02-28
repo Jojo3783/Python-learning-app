@@ -11,7 +11,7 @@ api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
-def get_gemini_response(message: str, level: int):
+def get_gemini_response(level: int, message: str = None, code: str = None):
     """
     專門負責呼叫 Gemini 的函式
     """
@@ -29,8 +29,6 @@ def get_gemini_response(message: str, level: int):
         ```python
         {code}
         ```
-        
-        學生的問題或留言是："{message}"
         
         請遵守以下規則：
         1. 請仔細分析學生的程式碼。如果是錯誤的，請用「引導」的方式提示他哪裡錯了（例如語法錯誤、邏輯錯誤），不要直接給出完整答案。

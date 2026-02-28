@@ -1,4 +1,5 @@
-1.先創建虛擬環境 (anaconda之類的)
+1.先創建虛擬環境 (anaconda之類的) 
+  anaconda 啟動環境 conda activate py-learning
 2.pip 指令 : pip install -r "..../requirements.txt"
   複製requirements確切的位置，如果要新增庫，直接在requirements.txt裡加上名字，重跑上面那行，版本盡量加。
 3.環境建好後，確保進入backend資料夾，在terminal執行 : uvicorn main:app --reload

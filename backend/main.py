@@ -29,15 +29,15 @@ def get_db():
         db.close()
 
 class ChatRequest(BaseModel):
-    message: str
     level: int = 1
+    message: Optional[str] = None
     code: Optional[str] = None
 
-# AI response(message, level, code)
+# AI response(level, message, code)
 @app.post("/api/chat")
 async def chat_with_gemini(request: ChatRequest):
     try:
-        result = get_gemini_response(request.message, request.level, request.code)
+        result = get_gemini_response(request.level, request.message, request.code)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
