@@ -161,8 +161,15 @@ export default function ChatScreen() {
             <TextInput
               style={styles.input}
               placeholder="問問老師..."
+              placeholderTextColor="rgba(255, 255, 255, 0.4)" // 配合科技感深色背景
               value={inputText}
               onChangeText={setInputText}
+              
+              // 核心功能：按下 Enter 發送
+              onSubmitEditing={() => handleSend(inputText)}
+              // 科技教室感：關閉自動校正與首字母大寫（看個人喜好）
+              autoCorrect={false}
+              autoCapitalize="none"
             />
             <TouchableOpacity style={styles.sendBtn} onPress={() => handleSend(inputText)}>
               {isLoading ? <ActivityIndicator color="#FFF" /> : <Text style={styles.sendBtnText}>發送</Text>}
