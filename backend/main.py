@@ -7,11 +7,13 @@ from typing import Optional
 # 這裡匯入服務
 from services.gemini_service import get_gemini_response
 import models
-from database import engine, DBSession
+from database import engine
+from routers import question
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="虛擬教室 API")
+app.include_router(question.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,13 +22,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-def get_db():
-    db = DBSession()
-    try:
-        yield db
-    finally:
-        db.close()
 
 class ChatRequest(BaseModel):
     level: int = 1
