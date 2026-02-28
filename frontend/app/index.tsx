@@ -54,7 +54,7 @@ export default function index() {
             {/* 恢復你原本的透明度動畫與傾斜角度 */}
             <Animated.View style={[styles.bubbleContainer, { opacity: blinkAnim }]}>
               <View style={styles.bubble}>
-                <Text style={styles.bubbleText}>Hello Hello, I'm FundAi !!</Text>
+                <Text style={styles.bubbleText}>Hello, I'm FundAi !!</Text>
               </View>
               <View style={styles.bubbleTail} />
             </Animated.View>

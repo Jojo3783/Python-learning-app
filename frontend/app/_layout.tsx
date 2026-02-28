@@ -64,15 +64,15 @@ export default function RootLayout() {
           title: '關卡',
           headerShown: true,
           headerStyle: {
-            backgroundColor: '#ffffff', 
+            backgroundColor: '#162316', 
           },
-          headerTintColor: '#333333', 
+          headerTintColor: '#ffffff', 
           headerLeft: () => (// 返回鍵
             <TouchableOpacity 
               onPress={() => navigation.navigate('LevelSelectScreen')} 
               style={{ marginLeft: 15 }}
             >
-              <Text style={{ color: '#00050a', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
+              <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
             </TouchableOpacity>
           ),
           
