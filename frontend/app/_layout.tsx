@@ -14,7 +14,7 @@ export default function RootLayout() {
 
       <Stack.Screen //AI chatbot
         name="ChatScreen" // "localhost/ChatScreen"
-        options={({ navigation }) => ({
+        options={({ navigation }) => ({//拿出navigation工具箱
           title: '剛剛der地方',
           headerStyle: {
             backgroundColor: '#0A0E14', 
