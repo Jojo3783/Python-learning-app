@@ -8,33 +8,30 @@ export default function RootLayout() {
     <Stack>
      
       <Stack.Screen // homepage
-        name="index" 
+        name="index" // the root "localhost/"
         options={{ headerShown: false }} // no header
       />
 
       <Stack.Screen //AI chatbot
-        name="ChatScreen" 
+        name="ChatScreen" // "localhost/ChatScreen"
         options={({ navigation }) => ({
           title: '剛剛der地方',
           headerStyle: {
             backgroundColor: '#0A0E14', 
           },
-          headerTintColor: '#00FFFF',
+          headerTintColor: '#00FFFF',//主要內容與可互動元素的顏色(header and 箭頭)
         })}
 
       />
       
       <Stack.Screen //levelselect page
-        name="LevelSelectScreen" 
+        name="LevelSelectScreen" // "localhost/LevelSelectScreen"
         options={({ navigation }) => ({ 
           title: '首頁',
-          headerShown: true,
-          headerShadowVisible: false,
-          headerTransparent: true, 
-          headerStyle: {
-            backgroundColor: 'transparent', // 配合透明
-          },
-          headerTintColor: '#00E5FF', // 螢光藍返回箭頭
+          headerShown: true,//show header or not
+          headerShadowVisible: false,//shadow or not
+          headerTransparent: true, //if false it will ignore background color and push down the page 
+          headerTintColor: '#00E5FF', // 螢光藍返回箭頭及標題
           headerTitleStyle: {
             fontWeight: '900',
             fontSize: 22,
@@ -54,14 +51,15 @@ export default function RootLayout() {
       />
 
       <Stack.Screen //game page
-        name="GameScreen" 
+        name="GameScreen" // "localhost/GameScreen"
         options={({ navigation }) => ({
           title: '關卡',
           headerShown: true,
           headerStyle: {
             backgroundColor: '#162316', 
           },
-          headerTintColor: '#ffffff', 
+          headerTintColor: '#ffffff',
+          //  強制加入左側按鈕，解決重新整理消失的問題
           headerLeft: () => (// 返回鍵
             <TouchableOpacity 
               onPress={() => navigation.navigate('LevelSelectScreen')} 
@@ -70,7 +68,6 @@ export default function RootLayout() {
               <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
             </TouchableOpacity>
           ),
-          
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 18,
