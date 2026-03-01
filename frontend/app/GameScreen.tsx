@@ -23,13 +23,14 @@ export default function GameScreen() {
       headerRight: () => (
         <TouchableOpacity 
           onPress={() => {
+            
             if (isUnlocked) {
               router.push({
                 pathname: '/ChatScreen',
                 params: { targetLevelIndex: targetLevelIndex }
               });
             } else {
-              Alert.alert("題目以完成,若需使用AI請至該題目");
+              window.alert("題目以完成,若需使用AI請至該題目");
             }
           }}
           style={{ 
