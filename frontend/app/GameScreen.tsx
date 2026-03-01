@@ -30,7 +30,7 @@ export default function GameScreen() {
                 params: { targetLevelIndex: targetLevelIndex }
               });
             } else {
-              window.alert("題目以完成,若需使用AI請至該題目");
+              window.alert(`你完成該題了！老師正在${currentProgress}關等你ㄛ `);
             }
           }}
           style={{ 
