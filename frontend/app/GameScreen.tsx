@@ -5,6 +5,7 @@ import React, {useState,  useEffect} from 'react';
 import { View, Text, StyleSheet, Button, Alert, TextInput, TouchableOpacity, ScrollView, Dimensions, PanResponder  } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import {LEVELS} from "./LEVELS";
+import { useLevel } from '../hooks/use-level';
 
 
 export default function GameScreen() {
@@ -15,15 +16,22 @@ export default function GameScreen() {
   const currentLevel = LEVELS[Number(targetLevelIndex)];
   // 用來記錄目前選中的是哪個頁籤，預設是 'description' (題目描述)
   const [activeTab, setActiveTab] = useState('description');
-
+  const { level: currentProgress } = useLevel(); //get level
+  const isUnlocked = currentLevel.id >= currentProgress;
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity 
-          onPress={() => router.push({
-            pathname: '/ChatScreen',
-            params: { targetLevelIndex: targetLevelIndex } // 把關卡參數傳給老師頁面
-          })} 
+          onPress={() => {
+            if (isUnlocked) {
+              router.push({
+                pathname: '/ChatScreen',
+                params: { targetLevelIndex: targetLevelIndex }
+              });
+            } else {
+              Alert.alert("題目以完成,若需使用AI請至該題目");
+            }
+          }}
           style={{ 
             marginRight: 15, 
             backgroundColor: '#cab8a2', 
@@ -35,12 +43,12 @@ export default function GameScreen() {
           }}
         >
           <Text style={{ color: '#170c52', fontWeight: 'bold', fontSize: 14 }}>
-            🌟 問老師
+            {isUnlocked ? '🌟 問老師' : '🔒 鎖定中'}
           </Text>
         </TouchableOpacity>
       ),
     });
-  }, [navigation, targetLevelIndex]); // 當 navigation 或 index 改變時重新設定
+  }, [navigation, targetLevelIndex]);
   
   const handleWin = () => {
     Alert.alert(`你完成了${currentLevel.id}關`);
