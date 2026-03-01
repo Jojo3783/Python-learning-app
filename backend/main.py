@@ -1,4 +1,5 @@
 # backend/main.py
+import asyncio
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -28,11 +29,19 @@ class ChatRequest(BaseModel):
     message: Optional[str] = None
     code: Optional[str] = None
 
+ai_lock = asyncio.Semaphore(1)
+
 # AI response(level, message, code)
 @app.post("/api/chat")
 async def chat_with_gemini(request: ChatRequest):
+    async with ai_lock:
+        await asyncio.sleep(3)
     try:
-        result = get_gemini_response(request.level, request.message, request.code)
+        result = get_gemini_response(
+            level=request.level,
+            message=request.message,
+            code=request.code
+        )
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
