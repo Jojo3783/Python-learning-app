@@ -32,7 +32,7 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([
     { 
       id: '1', 
-      text: `嘿！我是 fundAi 老師。我們現在在第 ${displayLevel} 關，準備好一起變強了嗎？`, 
+      text: `嘿！我是 fundAi 老師。我們現在在第 ${displayLevel} 關， 加油加油！！`, 
       sender: 'ai' 
     }
   ]);
