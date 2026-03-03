@@ -90,16 +90,15 @@ export default function index() {
             }}
           >
             <Text style={[styles.buttonText, { color: themeColors.textColor }]}>
-              Log In (test)
+              Log In
             </Text>
           </TouchableOpacity>
-          <View>
-            <Text>Do Not have an account?</Text>
-            <TouchableOpacity>
-                <Text>  Sign Up </Text>
+          <View style={{ flexDirection: 'row', marginTop: 20, justifyContent: 'center' }}>
+            <Text style={{ color: 'rgba(255,255,255,0.6)' }}>Do Not have an account?</Text>
+            <TouchableOpacity onPress={() => router.push('/SignUpScreen')}>
+              <Text style={{ color: '#00d2ff', fontWeight: 'bold' }}> Sign Up</Text>
             </TouchableOpacity>
-
-          </View> 
+          </View>
 
         </View>
 
@@ -112,7 +111,7 @@ export default function index() {
 
 
 const themeColors = {
-    backgroundColor: '#8e80f5', 
+    backgroundColor: '#7061e0', 
     buttonColor: '#facc15',     
     textColor: '#374151',     
 };
