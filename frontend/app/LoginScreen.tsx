@@ -5,10 +5,12 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [isPwdFocused, setIsPwdFocused] = useState(false);
   const [emailText, setEmailText] = useState('');
 
@@ -17,6 +19,12 @@ export default function LoginScreen() {
   const headRotate = useRef(new Animated.Value(0)).current; // 左右轉頭
   const blushOpacity = useRef(new Animated.Value(0)).current; // 臉紅透明度
   const handY = useRef(new Animated.Value(20)).current;    // 摀住眼睛的手
+
+  const dealLogin = async() => {
+    // 串接後端
+    router.replace('/LevelSelectScreen')
+
+  }
 
   // 1. 呼吸動畫
   useEffect(() => {
@@ -94,7 +102,7 @@ export default function LoginScreen() {
             
             <TextInput
               style={styles.input}
-              placeholder="請輸入 Email..."
+              placeholder="請輸入 用戶名..."
               onChangeText={setEmailText}
               onFocus={() => setIsPwdFocused(false)}
             />
@@ -107,7 +115,11 @@ export default function LoginScreen() {
               onBlur={() => setIsPwdFocused(false)}
             />
 
-            <TouchableOpacity style={styles.loginBtn}>
+           
+            <TouchableOpacity 
+              style={styles.loginBtn} 
+              onPress={dealLogin}  // <--- 這裡才是正確的位置
+            >
               <Text style={styles.loginText}>登入</Text>
             </TouchableOpacity>
           </BlurView>
