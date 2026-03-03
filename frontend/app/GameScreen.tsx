@@ -17,22 +17,17 @@ export default function GameScreen() {
   // 用來記錄目前選中的是哪個頁籤，預設是 'description' (題目描述)
   const [activeTab, setActiveTab] = useState('description');
   const { level: currentProgress } = useLevel(); //get level
-  const isUnlocked = currentLevel.id >= currentProgress;
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity 
           onPress={() => {
-            
-            if (isUnlocked) {
               router.push({
                 pathname: '/ChatScreen',
                 params: { targetLevelIndex: targetLevelIndex }
               });
-            } else {
-              window.alert(`你完成該題了！老師正在${currentProgress}關等你ㄛ `);
-            }
-          }}
+            } 
+          }
           style={{ 
             marginRight: 15, 
             backgroundColor: '#cab8a2', 
@@ -44,7 +39,7 @@ export default function GameScreen() {
           }}
         >
           <Text style={{ color: '#170c52', fontWeight: 'bold', fontSize: 14 }}>
-            {isUnlocked ? '🌟 問老師' : '🔒 鎖定中'}
+             問老師
           </Text>
         </TouchableOpacity>
       ),

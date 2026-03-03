@@ -35,7 +35,7 @@ ai_lock = asyncio.Semaphore(1)
 @app.post("/api/chat")
 async def chat_with_gemini(request: ChatRequest):
     async with ai_lock:
-        await asyncio.sleep(3)
+        await asyncio.sleep(3) 
     try:
         result = get_gemini_response(
             level=request.level,
