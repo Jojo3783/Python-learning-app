@@ -83,23 +83,23 @@ export default function index() {
             </Text>
           </TouchableOpacity>
 
-          {/* <TouchableOpacity
+           <TouchableOpacity
             style={[styles.button, { backgroundColor: themeColors.buttonColor }]}
             onPress={() => {
-              router.push('/SignUpScreen'); 
+              router.push('/LoginScreen'); 
             }}
           >
             <Text style={[styles.buttonText, { color: themeColors.textColor }]}>
-              Sign Up
+              Log In (test)
             </Text>
           </TouchableOpacity>
           <View>
-            <Text>Already have an account?</Text>
+            <Text>Do Not have an account?</Text>
             <TouchableOpacity>
-                <Text>  Log In </Text>
+                <Text>  Sign Up </Text>
             </TouchableOpacity>
 
-          </View> */}
+          </View> 
 
         </View>
 

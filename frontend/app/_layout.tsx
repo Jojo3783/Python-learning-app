@@ -75,10 +75,7 @@ export default function RootLayout() {
         })}
       />
 
-      <Stack.Screen // currently not use
-        name="LoginScreen" 
-        options={{ title: '會員登入' }} 
-      />
+      <Stack.Screen name="LoginScreen" />
       
       <Stack.Screen // currently not use
         name="SignUpScreen" 
