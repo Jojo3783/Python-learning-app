@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, Depends # 確保有 Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
+import models
 
 from services.gemini_service import get_gemini_response
 from services.judge_service import check_code
