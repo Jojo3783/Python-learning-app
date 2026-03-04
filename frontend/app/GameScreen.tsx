@@ -2,32 +2,56 @@
 // 點一個地方可以開一個新的頁面 可以跟ＡＩ communication (非即時，有cd時間，不是想問就問)
 //程式碼送出以後會進入 新頁面（會出現AC WA等等，結果  還有AI 點出問題）（成功之後要鎖程式畫面）
 import React, {useState,  useEffect} from 'react';
-import { View, Text, StyleSheet, Button, Alert, TextInput, TouchableOpacity, ScrollView, Dimensions, PanResponder  } from 'react-native';
+import { View, Text, StyleSheet, Button, Alert, TextInput, TouchableOpacity, ScrollView, ActivityIndicator  } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
-import {LEVELS} from "./LEVELS";
 import { useLevel } from '../hooks/use-level';
 
+const API_BASE_URL = 'http://127.0.0.1:8000'; // 換成你電腦的真實 IP
 
+// 設定你的 FastAPI 網址
 export default function GameScreen() {
   const navigation = useNavigation();
   const router = useRouter();
+
   const { targetLevelIndex } = useLocalSearchParams();
+  const realLevelId = Number(targetLevelIndex) + 1;
+  const [isPassed, setIsPassed] = useState(false); // 🌟 用來控制是否鎖定畫面
+  const [questionData, setQuestionData] = useState<any>(null); // 🌟 用來存後端抓來的題目
+  const [isLoading, setIsLoading] = useState(true); // 🌟 載入狀態
   const [code, setCode] = useState('');
-  const currentLevel = LEVELS[Number(targetLevelIndex)];
   // 用來記錄目前選中的是哪個頁籤，預設是 'description' (題目描述)
   const [activeTab, setActiveTab] = useState('description');
-  const { level: currentProgress } = useLevel(); //get level
+  // const { level: currentProgress } = useLevel(); //get level
+  
+  useEffect(() => {
+    const fetchQuestion = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/questions/${realLevelId}`);
+        const data = await response.json();
+        if (response.ok) {
+          setQuestionData(data);
+        } else {
+          Alert.alert("錯誤", data.detail || "找不到題目");
+        }
+      } catch (error) {
+        Alert.alert("連線失敗", "無法連接到伺服器，請確認 FastAPI 是否已啟動。");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchQuestion();
+  }, [realLevelId]);
+  
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity 
           onPress={() => {
-              router.push({
-                pathname: '/ChatScreen',
-                params: { targetLevelIndex: targetLevelIndex }
-              });
-            } 
-          }
+            router.push({
+              pathname: '/ChatScreen',
+              params: { targetLevelIndex: targetLevelIndex }
+            });
+          }}
           style={{ 
             marginRight: 15, 
             backgroundColor: '#cab8a2', 
@@ -46,9 +70,40 @@ export default function GameScreen() {
     });
   }, [navigation, targetLevelIndex]);
   
-  const handleWin = () => {
-    window.alert(`你完成了${currentLevel.id}關`);
+  const handleSubmit = async () => {
+    // 防呆：如果沒打字就按送出
+    if (code.trim() === '') {
+      Alert.alert("提示", "請先輸入程式碼喔！");
+      return;
+    }
+
+    // 簡單的判斷邏輯：比對玩家輸入的與後端抓來的答案
+    if (questionData && code.trim() === questionData.correct_answer.trim()) {
+      setIsPassed(true); // 🌟 答對了！將狀態設為 true，觸發畫面鎖定
+      Alert.alert("🎉 恭喜通關！", "程式碼完全正確 (AC)！");
+    } else {
+      Alert.alert("❌ 答案錯誤", "請再檢查一下你的程式碼喔！");
+    }
   };
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={{ marginTop: 10 }}>努力載入題目中...</Text>
+      </View>
+    );
+  }
+
+  if (!questionData) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 18, marginBottom: 10 }}>找不到第 {questionData.level} 關的題目 😢</Text>
+        <Text style={{ color: '#666' }}>請確認 FastAPI 有開啟，且資料庫裡有這關。</Text>
+        <Button title="回上一頁" onPress={() => router.back()} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.mainContainer}>
@@ -75,19 +130,25 @@ export default function GameScreen() {
         <View style={styles.contentContainer}>
         
           {/* 標題永遠顯示在最上面 */}
-          <Text style={styles.levelTitle}>第 {currentLevel.id} 關</Text>
+          <Text style={styles.levelTitle}>第 {realLevelId} 關</Text>
 
-          {/* --- 當點擊「題目描述」時顯示 --- */}
+         {/* --- 當點擊「題目描述」時顯示 --- */}
           {activeTab === 'description' && (
             <ScrollView>
-              <Text style={styles.contentText}>{currentLevel.question}</Text>
+              {/* ✅ 改成吃後端的 content，如果後端沒資料就顯示提示文字 */}
+              <Text style={styles.contentText}>
+                {questionData ? questionData.content : "這關的題目還沒準備好喔！"}
+              </Text>
             </ScrollView>
           )}
 
           {/* --- 當點擊「觀念提示」時顯示 --- */}
           {activeTab === 'hint' && (
             <ScrollView>
-              <Text style={styles.contentText}>{currentLevel.description}</Text>
+              {/* ✅ 改成吃後端的 description，如果後端沒資料就顯示提示文字 */}
+              <Text style={styles.contentText}>
+                {questionData ? questionData.description : "這關暫無提示！"}
+              </Text>
             </ScrollView>
           )}
         </View>
@@ -101,21 +162,32 @@ export default function GameScreen() {
           <Text style={styles.codeTitle}>撰寫 Python Code</Text>
         </View>
 
-        <View style={styles.codeEditorContainer}>
+        {/* 🌟 修改點 1：根據 isPassed 改變背景顏色 */}
+        <View style={[styles.codeEditorContainer, isPassed && { backgroundColor: '#1a1a1a', borderColor: '#333' }]}>
           <TextInput
-            style={styles.codeInput} 
-            multiline={true}//可以多行
-            placeholder="請在此輸入 Python 程式碼..."//標題
-            placeholderTextColor="#999"//標題顏色
-            value={code}//儲存裡面的文字
-            onChangeText={setCode}//文字改變時update code
-            autoCapitalize="none"//關掉自動大寫
-            autoCorrect={false}//自動拼寫修正
+            // 🌟 修改點 2：根據 isPassed 改變文字顏色
+            style={[styles.codeInput, isPassed && { color: '#666' }]} 
+            multiline={true}
+            // 🌟 修改點 3：根據 isPassed 改變提示文字
+            placeholder={isPassed ? "✅ 程式碼已鎖定 (AC)" : "請在此輸入 Python 程式碼..."}
+            placeholderTextColor="#999"
+            value={code}
+            onChangeText={setCode}
+            autoCapitalize="none"
+            autoCorrect={false}
             textAlignVertical="top"
+            // 🌟 修改點 4：核心魔法！答對後不允許編輯
+            editable={!isPassed} 
           />
         </View>
         
-        <Button title="送出批改" onPress={handleWin} color="#4CAF50" />
+        {/* 🌟 修改點 5：把 onPress 換成 handleSubmit，並在過關後 disabled */}
+        <Button 
+          title={isPassed ? "已完成" : "送出批改"} 
+          onPress={handleSubmit} 
+          color={isPassed ? "#555" : "#4CAF50"} 
+          disabled={isPassed}
+        />
       </View>
 
     </View>
