@@ -6,7 +6,7 @@ from typing import Optional, Dict, Any
 
 from services.gemini_service import get_gemini_response
 from services.judge_service import check_code
-import models
+from models import Question
 from database import engine, Base, get_session, DBSession
 from routers import question
 
