@@ -3,6 +3,7 @@ import os
 import json
 import google.generativeai as genai
 from dotenv import load_dotenv
+from typing import Dict, Any
 
 # 載入環境變數
 load_dotenv()
@@ -19,70 +20,91 @@ LEVEL_CONTEXT = {
     5: "教學重點：迴圈 (for i in range, for i in string)。概念：重複執行的觀念，range() 的參數用法。"
 }
 
-def get_gemini_response(level: int, message: str = None, code: str = None):
+# 暫存區：用來記錄不同學生的「專屬 AI 家教」與「目前的關卡」
+# 格式: { "user_id": { "chat_session": ChatSession, "level": int } }
+active_chats: Dict[str, Dict[str, Any]] = {}
+
+def _init_chat_session(level: int, db_context: str = None) -> Any:
     """
-    專門負責呼叫 Gemini 的函式
+    初始化一個新的 Gemini 對話，並把「絕對不變的設定」寫死在 System Instruction 裡 (只會吃一次)
+    """
+    current_focus = db_context if db_context else LEVEL_CONTEXT.get(level, "通用 Python 基礎")
+    
+    # 初始化時傳遞一次
+    system_prompt = f"""
+    你是一位針對兒童設計的 Python 程式設計家教，你的名字是「fundAi老師」。
+    你的任務是陪伴孩子學習，引導他們自己發現錯誤，嚴禁直接給出完整的正確答案。
+    
+    【本關學習重點與限制】
+    {current_focus}
+    (請絕對不要教超過這個範圍的語法，避免學生混淆)
+
+    請依照以下規則回應：
+    1. 如果是語法錯誤，請指出錯誤位置並給個簡單範例。
+    2. 如果是邏輯錯誤，請用提問的方式引導學生思考。
+    3. 如果答對了，給予熱情的稱讚！
+    4. 語氣要像在跟小學生說話，活潑親切。
+
+    【強制輸出格式】
+    你的每一次回覆都必須是純 JSON 格式，不要包含 ```json 標記：
+    {{"dialogue": "你的回覆(繁體中文)", "emotion": "happy" 或 "sad" 或 "thinking" 或 "encouraging"}}
+    """
+
+    # 建立帶有 System Instruction 的模型
+    model = genai.GenerativeModel(
+        model_name='gemini-2.5-flash',
+        system_instruction=system_prompt
+    )
+    
+    # 啟動對話 (回傳 ChatSession 物件)
+    return model.start_chat(history=[])
+
+
+def get_gemini_response(level: int, message: str = None, code: str = None, last_error: str = None, db_context: str = None, session_id: str = "demo_user"):
+    """
+    與 Gemini 進行輕量化對話。每次只傳遞最新的 Code 與學生的話。
     """
     if not api_key:
-        print("Error: API Key is missing in .env")
-        return {
-            "dialogue": "老師有點不舒服，請通知管理員檢查設定喔！",
-            "emotion": "uncomfortable"
+        return {"dialogue": "老師有點不舒服，請通知管理員檢查設定喔！", "emotion": "sad"}
+
+    # 1. 檢查這個學生是不是第一次玩，或者「切換關卡了」
+    # 如果換關卡，舊的對話紀錄與關卡限制就不適用了，必須重置 ChatSession
+    if session_id not in active_chats or active_chats[session_id]["level"] != level:
+        print(f"[{session_id}] 初始化/重置第 {level} 關的 AI 家教記憶體...")
+        new_chat = _init_chat_session(level, db_context)
+        active_chats[session_id] = {
+            "chat_session": new_chat,
+            "level": level
         }
+    
+    # 拿出該學生目前的專屬對話物件
+    chat = active_chats[session_id]["chat_session"]
 
-    model = genai.GenerativeModel('gemini-2.5-flash')
-
-    current_focus = LEVEL_CONTEXT.get(level, "通用 Python 基礎")
+    # 2. 組裝這次要「餵」給 AI 的輕量化動態訊息
+    user_prompt = ""
     
     if code:
-        prompt = f"""
-        你是一位針對兒童設計的 Python 程式設計家教，你的名字是「fundAi老師」。
-        學生目前正在進行第 {level} 關的學習。
+        user_prompt += f"【學生剛剛寫的程式碼】\n```python\n{code}\n```\n"
+        if last_error:
+            user_prompt += f"【系統判題結果 / 錯誤訊息】\n{last_error}\n"
+    
+    if message:
+        user_prompt += f"【學生的問題或對話】\n{message}\n"
         
-        學生提交了以下程式碼：
-        ```python
-        {code}
-        ```
+    if not user_prompt:
+        user_prompt = "學生進入了關卡，請跟他打個招呼！"
 
-        請依照以下步驟思考並回應：
-        1. **語法檢查**：檢查程式碼是否有 Syntax Error（如缺括號、缺冒號、縮排錯誤、拼字錯誤）。
-        2. **邏輯檢查**：程式碼是否符合本關要求？
-        3. **教學引導 (最重要)**：
-           - **如果是語法錯誤**：不要直接給正確程式碼！請指出錯誤的地方（例如：「你的 print 後面是不是少了一個括號？」），並給一個「類似的簡單範例」。
-           - **如果是邏輯錯誤**：引導學生思考（例如：「你現在印出來的是 30，但題目要求的是 300，是不是哪裡少乘了 10？」）。
-           - **如果正確**：給予熱情的稱讚，並強調他用對了哪個觀念。
-        
-        限制：
-        - 回覆必須包含 JSON 格式：{{"dialogue": "你的回覆", "emotion": "happy/neutral/thinking/surprised"}}
-        - 語氣要像在跟小學生說話，活潑親切。
-        - **嚴禁**直接給出完整的正確答案，要讓學生自己改。
-        """
-    else:
-        # 一般對話模式
-        prompt = f"""
-        你是一位針對兒童設計的 Python 程式設計家教「fundAi老師」。
-        學生目前在第 {level} 關。
-        【本關學習重點】：{current_focus}
-        
-        學生的問題："{message}"
-        
-        請依照以下規則回應：
-        1. 如果學生問「怎麼寫」或「教我」，請**不要**直接給答案。
-        2. 請解釋該語法的「結構」。例如學生問「怎麼寫迴圈」，你可以回：「迴圈就像是讓機器人重複做動作，我們要用 for ... in ... 的語法，像這樣：... (給一個簡單無關的範例)」。
-        3. 確保你的解釋符合【本關學習重點】，不要講太深奧的觀念。
-        
-        限制：
-        - 回覆必須包含 JSON 格式：{{"dialogue": "你的回覆", "emotion": "happy/neutral/thinking/surprised"}}
-        - 語氣親切、鼓勵性強。
-        """
-
+    # 3. 傳送訊息並取得回覆
     try:
-        response = model.generate_content(prompt)
+        # 使用 chat.send_message 會自動將這次的對話加入歷史紀錄
+        response = chat.send_message(user_prompt)
+        
+        # 清理字串並解析 JSON
         cleaned_text = response.text.replace("```json", "").replace("```", "").strip()
         return json.loads(cleaned_text)
+        
     except Exception as e:
         print(f"AI Error: {e}")
-        # 回傳一個備用的安全回應，避免整個程式掛掉
         return {
             "dialogue": "哎呀，老師的腦袋突然打結了，可以再說一次嗎？",
             "emotion": "thinking"
