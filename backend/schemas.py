@@ -32,8 +32,25 @@ class QuestionAdminResponse(BaseModel):
 
 
 class QuestionUpdate(BaseModel):
-    level: int | None = None          
-    content: str | None = None    
-    description : str  | None = None        
-    correct_answer: str | None = None
-    required_tokens : str | None = None
+  level: int | None = None          
+  content: str | None = None    
+  description : str  | None = None        
+  correct_answer: str | None = None
+  required_tokens : str | None = None
+
+class UserCreate(BaseModel):
+  username: str
+  password: str 
+
+# 回傳給前端的資料
+class UserResponse(BaseModel):
+  id: int
+  username: str
+  current_level: int
+  role: str
+    
+  class Config:
+    from_attributes = True
+
+class LevelUpdate(BaseModel):
+  new_level: int

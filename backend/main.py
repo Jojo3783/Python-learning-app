@@ -8,7 +8,7 @@ from services.gemini_service import get_gemini_response
 from services.judge_service import check_code
 from models import Question
 from database import engine, Base, get_session, DBSession
-from routers import question
+from routers import question , user
 
 # 引入 Ethan 的路由
 try:
@@ -33,6 +33,7 @@ app.add_middleware(
 # 註冊 Ethan 負責的題目路由
 if question:
     app.include_router(question.router)
+    app.include_router(user.router)
 
 # ==========================================
 # 輕量級後端暫存區 (In-Memory Session Cache)

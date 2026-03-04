@@ -3,11 +3,20 @@ from sqlalchemy import Column, Integer, String
 from database import Base
 
 class Question(Base):
-    __tablename__ = "questions"
+  __tablename__ = "questions"
 
-    id = Column(Integer, primary_key=True, index=True)
-    level = Column(Integer, unique=True, index=True)   # 關卡
-    description = Column(String)  # 題目敘述
-    content = Column(String)  # 題目                    
-    correct_answer = Column(String) # 答案
-    required_tokens = Column(String, default="") # default: "print" or "for,range"
+  id = Column(Integer, primary_key=True, index=True)
+  level = Column(Integer, unique=True, index=True)   # 關卡
+  description = Column(String)  # 題目敘述
+  content = Column(String)  # 題目                    
+  correct_answer = Column(String) # 答案
+  required_tokens = Column(String, default="") # default: "print" or "for,range"
+
+class User(Base):
+  __tablename__ = "users"
+
+  id = Column(Integer, primary_key=True, index=True)
+  username = Column(String, unique=True, index=True)
+  hashed_password = Column(String) 
+  current_level = Column(Integer, default = 1)
+  role = Column(String, default="student")
