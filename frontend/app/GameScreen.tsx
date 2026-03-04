@@ -6,6 +6,7 @@ import { View, Text, StyleSheet, Button, Alert, TextInput, TouchableOpacity, Scr
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { useLevel } from '../hooks/use-level';
 
+
 const API_BASE_URL = 'http://127.0.0.1:8000'; // 換成你電腦的真實 IP
 
 // 設定你的 FastAPI 網址
@@ -21,7 +22,7 @@ export default function GameScreen() {
   const [code, setCode] = useState('');
   // 用來記錄目前選中的是哪個頁籤，預設是 'description' (題目描述)
   const [activeTab, setActiveTab] = useState('description');
-  // const { level: currentProgress } = useLevel(); //get level
+  const { level: currentProgress } = useLevel(); //get level
   
   useEffect(() => {
     const fetchQuestion = async () => {
@@ -70,21 +71,50 @@ export default function GameScreen() {
     });
   }, [navigation, targetLevelIndex]);
   
-  const handleSubmit = async () => {
-    // 防呆：如果沒打字就按送出
-    if (code.trim() === '') {
-      Alert.alert("提示", "請先輸入程式碼喔！");
-      return;
-    }
+const {setLevel} = useLevel()
+const handleSubmit = async () => {
+  if (!code.trim()) {
+    window.alert("內容不能為空ㄛ");
+    return;
+  }
 
-    // 簡單的判斷邏輯：比對玩家輸入的與後端抓來的答案
-    if (questionData && code.trim() === questionData.correct_answer.trim()) {
-      setIsPassed(true); // 🌟 答對了！將狀態設為 true，觸發畫面鎖定
-      Alert.alert("🎉 恭喜通關！", "程式碼完全正確 (AC)！");
+  setIsLoading(true);
+
+  try {
+    // 1. 發送請求
+    const response = await fetch('http://localhost:8000/api/submit', {
+      method: "POST", 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        level: currentProgress, 
+        code: code,
+      }),
+    }); 
+
+    const result = await response.json();
+
+    if (result.is_correct) {
+      setIsPassed(true);
+      window.alert("太棒了！" + result.feedback);
+
+     
+      const nextLevel = currentProgress + 1;
+      setLevel(nextLevel); 
+      
+ 
     } else {
-      Alert.alert("❌ 答案錯誤", "請再檢查一下你的程式碼喔！");
+      //  處理失敗邏輯 (語法錯誤、測資沒過等)
+      alert(result.feedback);
     }
-  };
+  } catch (error) {
+    console.error("提交失敗:", error);
+    alert("連線發生錯誤，請稍後再試。");
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   if (isLoading) {
     return (
