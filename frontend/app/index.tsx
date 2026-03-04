@@ -96,7 +96,7 @@ export default function index() {
           <View style={{ flexDirection: 'row', marginTop: 20, justifyContent: 'center' }}>
             <Text style={{ color: 'rgba(255,255,255,0.6)' }}>Do Not have an account?</Text>
             <TouchableOpacity onPress={() => router.push('/SignUpScreen')}>
-              <Text style={{ color: '#00d2ff', fontWeight: 'bold' }}> Sign Up</Text>
+              <Text style={{ color: '#facc15', fontWeight: 'bold' }}> Sign Up</Text>
             </TouchableOpacity>
           </View>
 

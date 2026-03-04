@@ -26,7 +26,7 @@ export default function ChatScreen() {
   // 接收來自 GameScreen 的參數
   const { targetLevelIndex, currentCode } = useLocalSearchParams();
   
-  const [inputText, setInputText] = useState('');
+
   const displayLevel = Number(targetLevelIndex) + 1;
   
   const [messages, setMessages] = useState<Message[]>([
@@ -36,10 +36,21 @@ export default function ChatScreen() {
       sender: 'ai' 
     }
   ]);
-
+  const [inputText, setInputText] = useState('');
   const [emotion, setEmotion] = useState('happy'); 
   const [isLoading, setIsLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    let timer: any; //簡單暴力
+    if (cooldown > 0) {
+      timer = setInterval(() => {
+        setCooldown((prev) => prev - 1);
+      }, 1000)
+    }
+     return () => clearInterval(timer);
+  }, [cooldown]);
 
   // 設定 Header 返回邏輯
   useEffect(() => {
@@ -63,7 +74,7 @@ export default function ChatScreen() {
 
   // 核心：串接 FastAPI 後端
   const handleSend = async (text: string) => {
-    if (text.trim() === '' || isLoading) return;
+    if (text.trim() === '' || isLoading || cooldown > 0) return;
 
     // 1. 顯示使用者訊息
     const userMsg: Message = { id: Date.now().toString(), text, sender: 'user' };
@@ -96,6 +107,7 @@ export default function ChatScreen() {
       
       setMessages(prev => [...prev, aiMsg]);
       setEmotion(data.emotion || 'happy');
+      setCooldown(15);
 
     } catch (error) {
       console.error("API Error:", error);
@@ -171,8 +183,18 @@ export default function ChatScreen() {
               autoCorrect={false}
               autoCapitalize="none"
             />
-            <TouchableOpacity style={styles.sendBtn} onPress={() => handleSend(inputText)}>
-              {isLoading ? <ActivityIndicator color="#FFF" /> : <Text style={styles.sendBtnText}>發送</Text>}
+            <TouchableOpacity 
+              style={[styles.sendBtn, (cooldown > 0 || isLoading) && styles.disabledBtn]} 
+              onPress={() => handleSend(inputText)}
+              disabled={cooldown > 0 || isLoading} // 冷卻中禁用按鈕
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text style={styles.sendBtnText}>
+                  {cooldown > 0 ? `等待 ${cooldown}s` : "發送"}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -342,4 +364,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
   },
+ 
+  disabledBtn: {
+    backgroundColor: '#999', // 禁用時變成灰色
+  },
+ 
 });

@@ -47,7 +47,7 @@ export default function GameScreen() {
   }, [navigation, targetLevelIndex]);
   
   const handleWin = () => {
-    Alert.alert(`你完成了${currentLevel.id}關`);
+    window.alert(`你完成了${currentLevel.id}關`);
   };
 
   return (
