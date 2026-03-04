@@ -16,14 +16,13 @@ export default function GameScreen() {
 
   const { targetLevelIndex } = useLocalSearchParams();
   const realLevelId = Number(targetLevelIndex) + 1;
-  const [isPassed, setIsPassed] = useState(false); // 🌟 用來控制是否鎖定畫面
   const [questionData, setQuestionData] = useState<any>(null); // 🌟 用來存後端抓來的題目
   const [isLoading, setIsLoading] = useState(true); // 🌟 載入狀態
   const [code, setCode] = useState('');
   // 用來記錄目前選中的是哪個頁籤，預設是 'description' (題目描述)
   const [activeTab, setActiveTab] = useState('description');
   const { level: currentProgress } = useLevel(); //get level
-  
+  const isPassed = currentProgress > realLevelId;
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
@@ -96,7 +95,7 @@ const handleSubmit = async () => {
     const result = await response.json();
 
     if (result.is_correct) {
-      setIsPassed(true);
+     
       window.alert("太棒了！" + result.feedback);
 
      
@@ -199,7 +198,7 @@ const handleSubmit = async () => {
             style={[styles.codeInput, isPassed && { color: '#666' }]} 
             multiline={true}
             // 🌟 修改點 3：根據 isPassed 改變提示文字
-            placeholder={isPassed ? "✅ 程式碼已鎖定 (AC)" : "請在此輸入 Python 程式碼..."}
+            placeholder={ (isPassed) ? "✅ 程式碼已鎖定 (AC)" : "請在此輸入 Python 程式碼..."}
             placeholderTextColor="#999"
             value={code}
             onChangeText={setCode}
@@ -213,10 +212,10 @@ const handleSubmit = async () => {
         
         {/* 🌟 修改點 5：把 onPress 換成 handleSubmit，並在過關後 disabled */}
         <Button 
-          title={isPassed ? "已完成" : "送出批改"} 
+          title={(isPassed) ? "已完成" : "送出批改"} 
           onPress={handleSubmit} 
           color={isPassed ? "#555" : "#4CAF50"} 
-          disabled={isPassed}
+          disabled={(isPassed)}
         />
       </View>
 
