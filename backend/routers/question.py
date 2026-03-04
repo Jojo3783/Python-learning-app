@@ -35,8 +35,13 @@ def create_question(input: schemas.QuestionCAU , db : DBSession):
   return {"message" : "新增成功"}
 
 @router.put("/{id}")
-def update_question(input: schemas.QuestionCAU , db : DBSession):
-  question = db.query(models.Question).filter(models.Question.id == input.id).first()
+def update_question(id: int, input: schemas.QuestionCAU, db: DBSession): # <- 注意：這裡必須有 id: int
+  
+  # 👇 關鍵在這裡！
+  # ❌ 絕對不能寫 input.id
+  # ✅ 必須寫 id
+  question = db.query(models.Question).filter(models.Question.id == id).first()
+  
   if not question:
     raise HTTPException(status_code=404, detail="找不到題目可以更新")
   question.level = input.level

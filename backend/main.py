@@ -55,7 +55,7 @@ def update_session(user_id: str, code: str, last_error: Optional[str] = None):
 
 
 # ==========================================
-# API 請求 Schema 定義 (對應前端的打包格式)
+# API 請求 Schema 定義 
 # ==========================================
 class ChatRequest(BaseModel):
     level: int
@@ -76,7 +76,7 @@ async def chat_with_tutor(request: ChatRequest, db: DBSession):
     """
     處理前端與 fundAi 老師的對話
     """
-    # 1. 從 DB 撈出該關卡的限制與情境 (讓 Ethan 建立的 Question 資料表發揮作用)
+    # 1. 從 DB 撈出該關卡的限制與情境
     question_data = db.query(Question).filter(Question.level == request.level).first()
     db_context = question_data.description if question_data else "這是一個基礎的 Python 關卡。"
     
@@ -86,7 +86,7 @@ async def chat_with_tutor(request: ChatRequest, db: DBSession):
     current_code = request.code if request.code else session_data["current_code"]
     last_error = session_data["last_error"]
 
-    # 3. 呼叫我們剛剛升級的超省 Token 版 Gemini 服務
+    # 3. 呼叫服務
     ai_response = get_gemini_response(
         level=request.level,
         message=request.message,
