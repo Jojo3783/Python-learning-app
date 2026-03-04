@@ -18,7 +18,7 @@ def get_question(level : int , db : DBSession ):
   return question
 
 @router.post("/")
-def create_question(input: schemas.QuestionCAU , db : DBSession):
+def create_question(input: schemas.QuestionCreate , db : DBSession):
   exsist = db.query(models.Question).filter(models.Question.level == input.level).first()
   if exsist:
     raise HTTPException(status_code=400, detail=f"第 {input.level} 關已經有題目")
@@ -34,21 +34,14 @@ def create_question(input: schemas.QuestionCAU , db : DBSession):
   db.commit()
   return {"message" : "新增成功"}
 
-@router.put("/{id}")
-def update_question(id: int, input: schemas.QuestionCAU, db: DBSession): # <- 注意：這裡必須有 id: int
-  
-  # 👇 關鍵在這裡！
-  # ❌ 絕對不能寫 input.id
-  # ✅ 必須寫 id
+@router.patch("/{id}")
+def update_question(id : int , input: schemas.QuestionUpdate , db : DBSession):
   question = db.query(models.Question).filter(models.Question.id == id).first()
-  
   if not question:
     raise HTTPException(status_code=404, detail="找不到題目可以更新")
-  question.level = input.level
-  question.description = input.description
-  question.content = input.content
-  question.correct_answer = input.correct_answer
-  question.required_tokens = input.required_tokens
+  update_data = input.model_dump(exclude_unset=True)
+  for key, value in update_data.items():
+    setattr(question, key, value)
   db.commit()
   return {"message": "題目已成功更新"}
 

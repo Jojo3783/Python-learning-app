@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 # 定義新增與更新格式
-class QuestionCAU(BaseModel):
+class QuestionCreate(BaseModel):
     level: int             
     content: str
     description : str            
@@ -29,3 +29,11 @@ class QuestionAdminResponse(BaseModel):
 
   class Config:
     from_attributes = True
+
+
+class QuestionUpdate(BaseModel):
+    level: int | None = None          
+    content: str | None = None    
+    description : str  | None = None        
+    correct_answer: str | None = None
+    required_tokens : str | None = None
