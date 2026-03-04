@@ -22,7 +22,7 @@ export default function GameScreen() {
   // 用來記錄目前選中的是哪個頁籤，預設是 'description' (題目描述)
   const [activeTab, setActiveTab] = useState('description');
   const { level: currentProgress } = useLevel(); //get level
-  const isPassed = currentProgress > realLevelId;
+  
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
@@ -69,7 +69,8 @@ export default function GameScreen() {
       ),
     });
   }, [navigation, targetLevelIndex]);
-  
+const [localPassed, setLocalPassed] = useState(false);
+const isPassed = currentProgress > realLevelId || localPassed;
 const {setLevel} = useLevel()
 const handleSubmit = async () => {
   if (!code.trim()) {
@@ -98,7 +99,7 @@ const handleSubmit = async () => {
      
       window.alert("太棒了！" + result.feedback);
 
-     
+      setLocalPassed(true);
       const nextLevel = currentProgress + 1;
       setLevel(nextLevel); 
       
