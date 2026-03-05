@@ -97,9 +97,26 @@ export default function RootLayout() {
         })}
         />
         
-      <Stack.Screen // currently not use
+      <Stack.Screen 
         name="SignUpScreen" 
-        options={{ title: '註冊new account' }} 
+        options = {({ navigation }) => ({
+          title: '首頁',
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: '#0f172a',
+            borderBottomWidth: 0,
+          },
+          headerTintColor: '#e2d9d9',
+          headerLeft: () => (
+             <TouchableOpacity 
+              onPress={() => navigation.navigate('index')} 
+              style={{ marginLeft: 15 }}
+            >
+              <Text style={{ color: '#e2d9d9', fontWeight: 'bold', fontSize: 16 }}>⬅</Text>
+            </TouchableOpacity>
+          )
+        
+        })}
       />
     </Stack>
   );
