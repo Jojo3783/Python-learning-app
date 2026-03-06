@@ -49,7 +49,7 @@ export default function index() {
         </Text>
 
         
-       <View style={[styles.imageContainer, { transform: [{ scale: 1.5 }] }]}>
+       <View style={[styles.imageContainer, { transform: [{ scale: 1.4 }] }]}>
           <View style={styles.imageWrapper}>
             {/* 恢復你原本的透明度動畫與傾斜角度 */}
             <Animated.View style={[styles.bubbleContainer, { opacity: blinkAnim }]}>
@@ -60,7 +60,7 @@ export default function index() {
             </Animated.View>
             
             <Image 
-              source={require("../assets/images/TA.png")} 
+              source={require("../assets/images/fandai_anime.gif")} 
               style={styles.characterImage} 
               resizeMode="contain" 
             />
