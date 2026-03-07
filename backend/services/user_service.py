@@ -2,6 +2,11 @@ from sqlalchemy.orm import Session
 import bcrypt
 import models, schemas
 
+# 如何拿錯誤說明，
+# 有了id，把user的資料從user資料庫篩出來，就可以使用那個物件 current_user.records，拿到他所有的錯誤資訊的list
+
+
+
 # 將明碼變成亂碼
 def password_hash(password: str) -> str:
   pwd_bytes = password.encode('utf-8')
@@ -49,3 +54,53 @@ def update_level(db: Session, user: models.User, new_level: int):
   db.commit()
   db.refresh(user)
   return user
+
+def create_record(db: Session, mistake_in: schemas.MistakeCreate, user_id: int):
+  new_mistake = models.Record(
+    question_content=mistake_in.question_content,
+    wrong_answer=mistake_in.wrong_answer,
+    user_id=user_id 
+  )
+  db.add(new_mistake)
+  db.commit()
+  db.refresh(new_mistake)
+    
+  return new_mistake
+
+def get_my_record(user_id: int, db: Session):
+  user = db.query(models.User).filter(models.User.id == user_id).first()
+  return user.record
+
+def update_record(db: Session, record_id: int, record_in: schemas.RecordUpdate, user_id: int):
+  db_record = db.query(models.Record).filter(models.Record.id == record_id).first()
+    
+  if not db_record:
+    return None
+        
+  if db_record.user_id != user_id:
+    return "FORBIDDEN" 
+
+  if record_in.latest_code is not None:
+    db_record.latest_code = record_in.latest_code
+        
+  if record_in.latest_error is not None:
+    db_record.latest_error = record_in.latest_error
+
+  db.commit()
+  db.refresh(db_record)
+    
+  return db_record
+
+def delete_record(db:Session , record_id: int , user_id : int):
+  db_record = db.query(models.Record).filter(models.Record.id == record_id).first()
+
+  if not db_record:
+    return None
+  
+  if db_record.user_id != user_id:
+    return "FORBIDDEN" 
+  
+  db.delete(db_record)
+  db.commit()
+
+  return True

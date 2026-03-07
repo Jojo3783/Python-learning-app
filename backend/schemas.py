@@ -54,3 +54,19 @@ class UserResponse(BaseModel):
 
 class LevelUpdate(BaseModel):
   new_level: int
+
+class RecordCreate(BaseModel):
+  latest_code: str
+  latest_error: str | None = None
+
+class RecordResponse(BaseModel):
+  id: int
+  latest_code: str
+  latest_error: str
+
+  class Config:
+    from_attributes = True 
+
+class RecordUpdate(BaseModel):
+  latest_code: str | None = None
+  latest_error: str | None = None

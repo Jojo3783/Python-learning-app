@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String , ForeignKey
+from sqlalchemy.orm import relationship
 from database import Base
 
 class Question(Base):
@@ -19,3 +20,14 @@ class User(Base):
   hashed_password = Column(String) 
   current_level = Column(Integer, default = 1)
   role = Column(String, default="student")
+
+  record = relationship("Record" , back_populates = "users" , cascade="all, delete-orphan")
+
+class Record(Base):
+  __tablename__ = "records"
+
+  id = Column(Integer, primary_key=True, index=True)
+  user_id = Column(String , ForeignKey("users.id"))
+  latest_code = Column(String)
+  latest_error = Column(String , nullable = True)
+  user = relationship("User" , back_populates = "records")
