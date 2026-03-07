@@ -1,5 +1,5 @@
-import asyncio
-from fastapi import FastAPI, HTTPException, Depends # 確保有 Depends
+import ast
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
@@ -8,7 +8,7 @@ from services.gemini_service import get_gemini_response
 from services.judge_service import check_code
 from models import Question
 from database import engine, Base, get_session, DBSession
-from routers import question , user
+from routers import question, user
 
 # 引入 Ethan 的路由
 try:
@@ -41,7 +41,7 @@ if question:
 # ==========================================
 student_sessions: Dict[str, Dict[str, Any]] = {}
 
-def get_session(user_id: str = "demo_user") -> Dict[str, Any]:
+def get_session(user_id: str) -> Dict[str, Any]:
     """取得學生的暫存狀態，若無則初始化"""
     if user_id not in student_sessions:
         student_sessions[user_id] = {"current_code": "", "last_error": None}
@@ -75,26 +75,26 @@ class SubmitRequest(BaseModel):
 @app.post("/api/chat")
 async def chat_with_tutor(request: ChatRequest, db: DBSession):
     """
-    處理前端與 fundAi 老師的對話
+    與AI老師對話
     """
     # 1. 從 DB 撈出該關卡的限制與情境
     question_data = db.query(Question).filter(Question.level == request.level).first()
     db_context = question_data.description if question_data else "這是一個基礎的 Python 關卡。"
     
     # 2. 取得程式碼與歷史錯誤
-    # 優先使用前端這次傳來的 code，沒有的話去暫存區找
-    session_data = get_session("demo_user")
+    # 優先使用前端傳來的 code，沒有的話去暫存區找
+    session_data = get_session("demo_user") #TODO: DEMO_USER
     current_code = request.code if request.code else session_data["current_code"]
     last_error = session_data["last_error"]
 
     # 3. 呼叫服務
     ai_response = get_gemini_response(
         level=request.level,
+        session_id="demo_user",  #TODO: DEMO_USER
         message=request.message,
         code=current_code,
         last_error=last_error,
         db_context=db_context,
-        session_id="demo_user"  # Demo 階段統一用這個，未來可換成真實 User ID
     )
     
     return ai_response
@@ -102,30 +102,68 @@ async def chat_with_tutor(request: ChatRequest, db: DBSession):
 
 @app.post("/api/submit")
 async def submit_code(request: SubmitRequest, db: DBSession):
+    """
+    處理學生提交的程式碼，進行判題
+    """
     question_data = db.query(Question).filter(Question.level == request.level).first()
     
     if not question_data:
         raise HTTPException(status_code=404, detail="找不到該關卡資料")
 
-    expected_out = question_data.correct_answer
-    
-    if "print('" in expected_out:
-        # 簡單的提取邏輯：取得第一個 ' 到最後一個 ' 之間的內容
-        import re
-        match = re.search(r"'(.*?)'", expected_out)
-        if match:
-            expected_out = match.group(1)
-    # -----------------------------------
+    raw_correct_answer = question_data.correct_answer
+    test_cases = []
 
-    test_cases = [{"input": "", "expected_output": expected_out}]
-    
+    try:
+        # 將 DB JSON字串解析成 Python 字典
+        parsed_data = ast.literal_eval(raw_correct_answer)
+        
+        test_data_str = parsed_data.get("test_data", "[]")
+        answer_str = parsed_data.get("answer", "[]")
+        
+        test_data_list = ast.literal_eval(test_data_str)
+        answer_list = ast.literal_eval(answer_str)
+        
+        # 組合多筆測資格式
+        for inputs, expected_out in zip(test_data_list, answer_list):
+            if isinstance(inputs, list):
+                input_str = " ".join(map(str, inputs)) + "\n"
+            else:
+                input_str = str(inputs) + "\n"
+                
+            test_cases.append({
+                "input": input_str,
+                "expected_output": str(expected_out)
+            })
+            
+    except Exception as e:
+        # 確定不相容舊格式，如果解析失敗，直接拋出 500 錯誤，提醒檢查資料庫
+        print(f"測資解析失敗: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"該關卡的測資格式解析失敗，請確認資料庫中 correct_answer 是否為正確的 JSON 字典格式。錯誤訊息: {str(e)}"
+        )
+
+    # 處理必備語法限制 (如 "print,for")
     req_tokens_str = question_data.required_tokens or ""
     required_tokens = [t.strip() for t in req_tokens_str.split(",") if t.strip()]
 
+    # 送入沙盒進行判題
     result = check_code(
         user_code=request.code,
         test_cases=test_cases,
         required_tokens=required_tokens
     )
-    
+
+    if not result.get("is_correct"):
+        error_msg = result.get("error_message") or result.get("feedback")
+    else:
+        error_msg = None
+
+    # 將最新的程式碼與錯誤狀態更新到記憶體中
+    update_session(
+        user_id="demo_user",  #TODO: DEMO_USER
+        code=request.code, 
+        last_error=error_msg
+    )
+
     return result
