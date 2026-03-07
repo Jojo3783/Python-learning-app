@@ -55,17 +55,17 @@ def update_level(db: Session, user: models.User, new_level: int):
   db.refresh(user)
   return user
 
-def create_record(db: Session, mistake_in: schemas.MistakeCreate, user_id: int):
-  new_mistake = models.Record(
-    latest_code=mistake_in.wrong_code,
-    latest_error=mistake_in.error_message,
+def create_record(db: Session, record_in: schemas.RecordCreate, user_id: int):
+  new_record = models.Record(
+    latest_code= record_in.latest_code,
+    latest_error= record_in.latest_error,
     user_id=user_id 
   )
-  db.add(new_mistake)
+  db.add(new_record)
   db.commit()
-  db.refresh(new_mistake)
+  db.refresh(new_record)
     
-  return new_mistake
+  return new_record
 
 def get_my_record(user_id: int, db: Session):
   user = db.query(models.User).filter(models.User.id == user_id).first()
