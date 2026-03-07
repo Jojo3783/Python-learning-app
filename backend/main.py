@@ -107,9 +107,6 @@ async def submit_code(request: SubmitRequest, db: DBSession):
     if not question_data:
         raise HTTPException(status_code=404, detail="找不到該關卡資料")
 
-    # --- 修改這裡：處理預期輸出 ---
-    # 由於 db_init.py 存的是 "print('Hello World!')"
-    # 我們需要提取出括號內的內容作為真正的「預期輸出」
     expected_out = question_data.correct_answer
     
     if "print('" in expected_out:
