@@ -6,3 +6,4 @@
 3.環境建好後，確保進入backend資料夾，在terminal執行 : uvicorn main:app --reload
 4.可以進http://127.0.0.1:8000/api看看有沒有東東  (http://127.0.0.1:8000/docs 這樣好像才有)
 
+    
