@@ -1,4 +1,3 @@
-# backend/database.py
 from sqlalchemy import create_engine
 from typing import Annotated
 from sqlalchemy.orm import sessionmaker, declarative_base , Session
