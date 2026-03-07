@@ -21,13 +21,13 @@ class User(Base):
   current_level = Column(Integer, default = 1)
   role = Column(String, default="student")
 
-  record = relationship("Record" , back_populates = "users" , cascade="all, delete-orphan")
+  records = relationship("Record", back_populates="user", cascade="all, delete-orphan")
 
 class Record(Base):
   __tablename__ = "records"
 
   id = Column(Integer, primary_key=True, index=True)
-  user_id = Column(String , ForeignKey("users.id"))
+  user_id = Column(Integer, ForeignKey("users.id"))
   latest_code = Column(String)
-  latest_error = Column(String , nullable = True)
-  user = relationship("User" , back_populates = "records")
+  latest_error = Column(String, nullable=True)
+  user = relationship("User", back_populates="records")

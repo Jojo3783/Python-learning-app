@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 # 定義新增與更新格式
 class QuestionCreate(BaseModel):
@@ -70,3 +70,10 @@ class RecordResponse(BaseModel):
 class RecordUpdate(BaseModel):
   latest_code: str | None = None
   latest_error: str | None = None
+
+class MistakeCreate(BaseModel):
+    wrong_code: str
+    error_message: str
+
+    class Config:
+        from_attributes = True

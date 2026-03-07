@@ -1,14 +1,17 @@
 import os
 import json
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 from typing import Dict, Any
 
+# 載入環境變數
 load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
-if api_key:
-    genai.configure(api_key=api_key)
+# 初始化新版 SDK Client
+# 新版 SDK 不再使用 genai.configure()，而是透過 Client 實例進行操作
+client = genai.Client(api_key=api_key) if api_key else None
 
 LEVEL_CONTEXT = {
     1: "教學重點：Python 的 print() 函式。概念：字串需要用引號包起來，多個資料可以用逗號隔開。禁止使用：變數、f-string。",
@@ -19,16 +22,16 @@ LEVEL_CONTEXT = {
 }
 
 # 暫存區：用來記錄不同學生的「專屬 AI 家教」與「目前的關卡」
-# 格式: { "user_id": { "chat_session": ChatSession, "level": int } }
 active_chats: Dict[str, Dict[str, Any]] = {}
 
 def _init_chat_session(level: int, db_context: str = None, db_content: str = None) -> Any:
     """
-    初始化一個新的 Gemini 對話，並把「絕對不變的設定」與「題目內容」寫死在 System Instruction 裡
+    初始化一個新的 Gemini 對話 (新版 SDK 語法)
     """
     current_focus = db_context if db_context else LEVEL_CONTEXT.get(level, "通用 Python 基礎")
     current_question = db_content if db_content else "這是一道自由發揮的 Python 練習題。"
     
+    # 定義系統提示詞 (System Instruction)
     system_prompt = f"""
     你是一位針對兒童設計的 Python 程式設計家教，你的名字是「fundAi老師」。
     你的任務是陪伴孩子學習，引導他們自己發現錯誤，嚴禁直接給出完整的正確答案。
@@ -53,23 +56,26 @@ def _init_chat_session(level: int, db_context: str = None, db_content: str = Non
     {{"dialogue": "你的回覆(繁體中文)", "emotion": "happy" 或 "sad" 或 "thinking" 或 "encouraging"}}
     """
 
-    model = genai.GenerativeModel(
-        model_name='gemini-2.5-flash',
-        system_instruction=system_prompt
+    chat = client.chats.create(
+        model='gemini-2.5-flash',
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt,
+            temperature=0.7,
+        ),
+        history=[]
     )
     
-    return model.start_chat(history=[])
+    return chat
 
 
 def get_gemini_response(level: int, session_id: str, message: str = None, code: str = None, last_error: str = None, db_context: str = None, db_content: str = None):
     """
-    與 Gemini 進行輕量化對話。每次只傳遞最新的 Code 與學生的話。
+    與 Gemini 進行輕量化對話。
     """
-    if not api_key:
+    if not client:
         return {"dialogue": "老師有點不舒服，請通知管理員檢查設定喔！", "emotion": "sad"}
 
     # 1. 檢查這個學生是不是第一次玩，或者「切換關卡了」
-    # 傳入 db_content 給 _init_chat_session 讓它建立帶有題目記憶的對話，就是初始化
     if session_id not in active_chats or active_chats[session_id]["level"] != level:
         print(f"[{session_id}] 初始化/重置第 {level} 關的 AI 家教記憶體...")
         new_chat = _init_chat_session(level, db_context, db_content)
@@ -95,9 +101,9 @@ def get_gemini_response(level: int, session_id: str, message: str = None, code: 
         user_prompt = "學生進入了關卡，請跟他打個招呼！"
 
     try:
-        # 使用 chat.send_message 會自動將這次的對話加入歷史紀錄
         response = chat.send_message(user_prompt)
         
+        # 清理並解析 JSON
         cleaned_text = response.text.replace("```json", "").replace("```", "").strip()
         return json.loads(cleaned_text)
         
