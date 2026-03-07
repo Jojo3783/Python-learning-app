@@ -57,8 +57,8 @@ def update_level(db: Session, user: models.User, new_level: int):
 
 def create_record(db: Session, mistake_in: schemas.MistakeCreate, user_id: int):
   new_mistake = models.Record(
-    question_content=mistake_in.question_content,
-    wrong_answer=mistake_in.wrong_answer,
+    latest_code=mistake_in.wrong_code,
+    latest_error=mistake_in.error_message,
     user_id=user_id 
   )
   db.add(new_mistake)
@@ -69,7 +69,7 @@ def create_record(db: Session, mistake_in: schemas.MistakeCreate, user_id: int):
 
 def get_my_record(user_id: int, db: Session):
   user = db.query(models.User).filter(models.User.id == user_id).first()
-  return user.record
+  return user.records
 
 def update_record(db: Session, record_id: int, record_in: schemas.RecordUpdate, user_id: int):
   db_record = db.query(models.Record).filter(models.Record.id == record_id).first()
