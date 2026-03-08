@@ -105,43 +105,47 @@ async def submit_code(request: SubmitRequest, db: DBSession):
     """
     處理學生提交的程式碼，進行判題
     """
-    question_data = db.query(Question).filter(Question.level == request.level).first()
+    question_data =     db.query(Question).filter(Question.level == request.level).first()
     
     if not question_data:
         raise HTTPException(status_code=404, detail="找不到該關卡資料")
 
-    raw_correct_answer = question_data.correct_answer
+    raw_correct_answer = question_data.correct_answer.strip()
     test_cases = []
 
-    try:
-        # 將 DB JSON字串解析成 Python 字典
-        parsed_data = ast.literal_eval(raw_correct_answer)
-        
-        test_data_str = parsed_data.get("test_data", "[]")
-        answer_str = parsed_data.get("answer", "[]")
-        
-        test_data_list = ast.literal_eval(test_data_str)
-        answer_list = ast.literal_eval(answer_str)
-        
-        # 組合多筆測資格式
-        for inputs, expected_out in zip(test_data_list, answer_list):
-            if isinstance(inputs, list):
-                input_str = " ".join(map(str, inputs)) + "\n"
-            else:
-                input_str = str(inputs) + "\n"
-                
-            test_cases.append({
-                "input": input_str,
-                "expected_output": str(expected_out)
-            })
+    # 💡 判斷邏輯：如果是以 { 開頭並以 } 結尾，代表是 Level 7 那種字典測資
+    if raw_correct_answer.startswith("{") and raw_correct_answer.endswith("}"):
+        try:
+            parsed_data = ast.literal_eval(raw_correct_answer)
             
-    except Exception as e:
-        # 確定不相容舊格式，如果解析失敗，直接拋出 500 錯誤，提醒檢查資料庫
-        print(f"測資解析失敗: {e}")
-        raise HTTPException(
-            status_code=500, 
-            detail=f"該關卡的測資格式解析失敗，請確認資料庫中 correct_answer 是否為正確的 JSON 字典格式。錯誤訊息: {str(e)}"
-        )
+            test_data_str = parsed_data.get("test_data", "[]")
+            answer_str = parsed_data.get("answer", "[]")
+            
+            test_data_list = ast.literal_eval(test_data_str)
+            answer_list = ast.literal_eval(answer_str)
+            
+            for inputs, expected_out in zip(test_data_list, answer_list):
+                if isinstance(inputs, list):
+                    input_str = " ".join(map(str, inputs)) + "\n"
+                else:
+                    input_str = str(inputs) + "\n"
+                    
+                test_cases.append({
+                    "input": input_str,
+                    "expected_output": str(expected_out)
+                })
+        except Exception as e:
+            print(f"測資解析失敗: {e}")
+            raise HTTPException(
+                status_code=500, 
+                detail=f"字典測資格式解析失敗。錯誤訊息: {str(e)}"
+            )
+    else:
+        # 💡 如果不是 { } 包起來的，就全部視為純字串答案 (Level 1~6 適用)
+        test_cases.append({
+            "input": "",
+            "expected_output": raw_correct_answer
+        })
 
     # 處理必備語法限制 (如 "print,for")
     req_tokens_str = question_data.required_tokens or ""
