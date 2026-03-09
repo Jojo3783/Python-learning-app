@@ -116,7 +116,6 @@ const themeColors = {
     textColor: '#374151',     
 };
 
-//TODO: add a file name LevelSelectPage for select level
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -143,7 +142,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',        // 讓容器佔滿寬度
-    alignItems: 'center',  // 讓內部的 Image 置中
+    alignItems: 'center',  // 讓 Image 置中
     justifyContent: 'center',
     position: 'relative',
     marginTop: 20,         // 給對話框留點上方空間
@@ -155,7 +154,7 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 12,          
     borderRadius: 24,             
-    // 陰影效果 (僅限手機版，網頁版會忽略)
+  
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,

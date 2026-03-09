@@ -8,7 +8,7 @@ export default function RootLayout() {
     <Stack>
      
       <Stack.Screen // homepage
-        name="index" // the root "localhost/"
+        name="index" 
         options={{ headerShown: false }} // no header
       />
 

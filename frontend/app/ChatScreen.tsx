@@ -52,7 +52,7 @@ export default function ChatScreen() {
      return () => clearInterval(timer);
   }, [cooldown]);
 
-  // 設定 Header 返回邏輯
+  // set Header 返回
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -72,7 +72,7 @@ export default function ChatScreen() {
   // 快捷選項
   const suggestions = ["這關怎麼寫？", "提示我一下", "幫我檢查程式碼"];
 
-  // 核心：串接 FastAPI 後端
+  // 串接  後端
   const handleSend = async (text: string) => {
     if (text.trim() === '' || isLoading || cooldown > 0) return;
 
@@ -85,14 +85,14 @@ export default function ChatScreen() {
 
     try {
       // 2. 發送 API 請求
-      // 注意：實機測試請將 localhost 換成電腦 IP (例如 192.168.x.x)
+
       const response = await fetch('http://localhost:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
           level: displayLevel,
-          code: currentCode || "" // 將從 GameScreen 帶過來的 code 傳給 AI
+          code: currentCode || "" // 將從 GameScreen 帶過來的 code 傳給 AI (not yet done)
         }),
       });
 
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   },
   headerStatus: {
     fontSize: 13,
-    color: '#00FFFF', // 青色字體
+    color: '#00FFFF', 
     marginLeft: 15,
     marginTop: 4,
     fontWeight: '600',

@@ -12,7 +12,8 @@ const { width } = Dimensions.get('window');
 export default function LoginScreen() {
   const router = useRouter();
   const [isPwdFocused, setIsPwdFocused] = useState(false);
-  const [emailText, setEmailText] = useState('');
+  const [username, setUserName] = useState('');
+  const [password, setPassword] = useState('');
 
   // 動態動畫數值
   const botY = useRef(new Animated.Value(0)).current;      // 呼吸與上下位移
@@ -20,11 +21,44 @@ export default function LoginScreen() {
   const blushOpacity = useRef(new Animated.Value(0)).current; // 臉紅透明度
   const handY = useRef(new Animated.Value(20)).current;    // 摀住眼睛的手
 
-  const dealLogin = async() => {
-    // 串接後端
-    router.replace('/LevelSelectScreen')
+  const dealLogin = async (username: string, password: string) => {
+    if (!username || !password) {
+      alert("請輸入帳號密碼");
+      return;
+    }
+    try {
+      // 1. 將帳密組合成 name:pass 並轉成 Base64
+      const credentials = `${username}:${password}`;
+      const base64Token = btoa(credentials); 
 
-  }
+      // 2. 串接後端 login 路由
+      const response = await fetch("http://localhost:8000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Authorization": `Basic ${base64Token}`
+        }
+      });
+
+      // 3. 檢查回應狀態
+      if (response.ok) {
+        const userData = await response.json();
+        
+        // 這樣刷新網頁或下次進入時，/api/users/me 才能用這個 token 檢查登入
+        localStorage.setItem("userToken", base64Token);
+
+        window.alert(`登入成功，歡迎： ${userData.username}`);
+
+        // 5. 成功後跳轉
+        router.replace('/LevelSelectScreen');
+      } else {
+        const errorData = await response.json();
+        alert(`登入失敗: ${errorData.detail || "帳號或密碼錯誤"}`);
+      }
+    } catch (error) {
+      console.error("網路錯誤:", error);
+      alert("無法連線到伺服器");
+    }
+  };
 
   // 1. 呼吸動畫
   useEffect(() => {
@@ -38,12 +72,12 @@ export default function LoginScreen() {
 
   // 2. 當 Email 字數改變時，頭部微轉（模擬盯著字看）
   useEffect(() => {
-    let rotation = Math.min(Math.max(emailText.length * 2 - 15, -15), 15);
+    let rotation = Math.min(Math.max(username.length * 2 - 15, -15), 15);
     Animated.spring(headRotate, {
       toValue: rotation,
       useNativeDriver: true,
     }).start();
-  }, [emailText]);
+  }, [username]);
 
   // 3. 處理「害羞」模式 (密碼框時)
   useEffect(() => {
@@ -103,7 +137,7 @@ export default function LoginScreen() {
             <TextInput
               style={styles.input}
               placeholder="請輸入 用戶名..."
-              onChangeText={setEmailText}
+              onChangeText={setUserName}
               onFocus={() => setIsPwdFocused(false)}
             />
 
@@ -111,6 +145,7 @@ export default function LoginScreen() {
               style={styles.input}
               placeholder="請輸入密碼 (我不會看哦)"
               secureTextEntry
+              onChangeText={setPassword}
               onFocus={() => setIsPwdFocused(true)}
               onBlur={() => setIsPwdFocused(false)}
             />
@@ -118,7 +153,7 @@ export default function LoginScreen() {
            
             <TouchableOpacity 
               style={styles.loginBtn} 
-              onPress={dealLogin}  // <--- 這裡才是正確的位置
+              onPress={() => dealLogin(username, password)}  // <--- 這裡才是正確的位置
             >
               <Text style={styles.loginText}>登入</Text>
             </TouchableOpacity>

@@ -16,8 +16,8 @@ export default function GameScreen() {
 
   const { targetLevelIndex } = useLocalSearchParams();
   const realLevelId = Number(targetLevelIndex) + 1;
-  const [questionData, setQuestionData] = useState<any>(null); // 🌟 用來存後端抓來的題目
-  const [isLoading, setIsLoading] = useState(true); // 🌟 載入狀態
+  const [questionData, setQuestionData] = useState<any>(null); // 用來存後端抓來的題目
+  const [isLoading, setIsLoading] = useState(true); // 載入 state
   const [code, setCode] = useState('');
   // 用來記錄目前選中的是哪個頁籤，預設是 'description' (題目描述)
   const [activeTab, setActiveTab] = useState('description');
