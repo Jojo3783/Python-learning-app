@@ -76,7 +76,16 @@ export default function ChatScreen() {
   const handleSend = async (text: string) => {
     if (text.trim() === '' || isLoading || cooldown > 0) return;
 
-    // 1. 顯示使用者訊息
+    // 💡 1. 每次發送訊息前，先去瀏覽器把登入時存的 Token 拿出來
+    const token = localStorage.getItem('userToken');
+
+    if (!token) {
+      alert("找不到登入憑證，請先回到首頁重新登入！");
+      router.replace('/LoginScreen'); // 強制跳回登入頁
+      return;
+    }
+
+    // 顯示使用者訊息
     const userMsg: Message = { id: Date.now().toString(), text, sender: 'user' };
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
@@ -84,21 +93,30 @@ export default function ChatScreen() {
     setEmotion('thinking');
 
     try {
-      // 2. 發送 API 請求
-
+      // 💡 2. 發送 API 請求，並在 Headers 中加上 Authorization
       const response = await fetch('http://localhost:8000/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${token}`  // 👈 補上這行，後端就不會擋你了！
+        },
         body: JSON.stringify({
           message: text,
           level: displayLevel,
-          code: currentCode || "" // 將從 GameScreen 帶過來的 code 傳給 AI (not yet done)
+          code: currentCode || "" // 將從 GameScreen 帶過來的 code 傳給 AI
         }),
       });
 
+      // 💡 3. 如果後端還是回傳 401，代表密碼改了或 Token 壞了
+      if (response.status === 401) {
+        alert("身分驗證過期或失敗，請重新登入");
+        router.replace('/LoginScreen');
+        return;
+      }
+
       const data = await response.json();
 
-      // 3. 處理 AI 回應
+      // 處理 AI 回應
       const aiMsg: Message = { 
         id: (Date.now() + 1).toString(), 
         text: data.dialogue, 
