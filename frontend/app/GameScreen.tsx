@@ -82,16 +82,17 @@ const handleSubmit = async () => {
 
   try {
     // 1. 發送請求
-    const response = await fetch('http://localhost:8000/api/submit', {
+    const response = await fetch(`${API_BASE_URL}/api/submit`, {
       method: "POST", 
       headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        level: currentProgress, 
-        code: code,
-      }),
-    }); 
+      "Content-Type": "application/json",
+      "Authorization": `Basic ${localStorage.getItem('userToken')}` 
+    },
+    body: JSON.stringify({
+      level: currentProgress, 
+      code: code,
+   }),
+  });
 
     const result = await response.json();
 
