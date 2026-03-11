@@ -3,13 +3,15 @@
 
 
 import { useLevel } from '../hooks/use-level';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView, Modal } from 'react-native';
 import { useRouter } from 'expo-router';
 import { apiService } from '../services/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Audio } from 'expo-av';// 匯入音樂
 import Slider from '@react-native-community/slider';// 匯入滑桿套件
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from 'expo-router'; // 🌟 新增這個
 const BGM_TRACKS = [
   { id: 0, name: "bgm1", file: require('../assets/Digital_Dusk.mp3') },
   { id: 1, name: "bgm2", file: require('../assets/Midnight_Reverie.mp3') },
@@ -39,47 +41,83 @@ export default function LevelSelectScreen() {
   const [volume, setVolume] = useState(0.5); // 預設音量 50%
   const [currentTrack, setCurrentTrack] = useState(0); // 預設播第一首
   const [isSettingsVisible, setIsSettingsVisible] = useState(false); // 控制設定選單顯示
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+  const volumeRef = useRef(volume);
 
+  // 🌟 新增 2：只要 volume state 一改變，就立刻同步給 Ref
+  useEffect(() => {
+    volumeRef.current = volume;
+  }, [volume]);
   // 🌟 5. 當滑桿改變時，即時調整音量
   useEffect(() => {
-    let currentSound: Audio.Sound | null = null;
-
-    const playMusic = async () => {
+    const loadSettings = async () => {
       try {
-        // 如果目前有音樂在播，先卸載它
-        if (sound) {
-          await sound.unloadAsync();
-        }
+        const savedVolume = await AsyncStorage.getItem('bgm_volume');
+        const savedTrack = await AsyncStorage.getItem('bgm_track');
         
-        // 載入新音樂並設定無限循環
-        const { sound: newSound } = await Audio.Sound.createAsync(
-          BGM_TRACKS[currentTrack].file,
-          { shouldPlay: true, isLooping: true, volume: volume }
-        );
-        
-        currentSound = newSound;
-        setSound(newSound);
+        if (savedVolume !== null) setVolume(parseFloat(savedVolume));
+        if (savedTrack !== null) setCurrentTrack(parseInt(savedTrack, 10));
       } catch (error) {
-        console.log("音樂播放失敗", error);
+        console.log("讀取設定失敗", error);
+      } finally {
+        setSettingsLoaded(true); // 標記為讀取完成
       }
     };
+    loadSettings();
+  }, []);
 
-    playMusic();
+  /// 🌟 修改：使用 useFocusEffect，確保只有在畫面顯示時才播音樂，離開時立刻停止
+  useFocusEffect(
+    useCallback(() => {
+      let currentSound: Audio.Sound | null = null;
+      let isActive = true; // 用來標記目前畫面是否還在焦點內
 
-    // 離開這個畫面時，把音樂關掉！
-    return () => {
-      if (currentSound) {
-        currentSound.unloadAsync();
-      }
-    };
-  }, [currentTrack]); // 當 currentTrack (歌單) 改變時，重新執行這段換歌
+      const playMusic = async () => {
+        // 確保設定已經讀取完畢才開始播
+        if (!settingsLoaded) return; 
 
-  // 🌟 2. 當滑桿改變時，即時調整音量 (只要留這一個就好)
+        try {
+          // 載入並播放音樂
+          const { sound: newSound } = await Audio.Sound.createAsync(
+            BGM_TRACKS[currentTrack].file,
+            { shouldPlay: true, isLooping: true, volume: volumeRef.current }
+          );
+          
+          if (isActive) {
+            currentSound = newSound;
+            setSound(newSound);
+          } else {
+            // 如果音樂載入完成時，使用者已經光速切換到別的畫面，就立刻卸載它
+            newSound.unloadAsync();
+          }
+        } catch (error) {
+          console.log("音樂播放失敗", error);
+        }
+      };
+
+      playMusic();
+
+      // 當「離開這個畫面」或「切換歌曲」時，會執行這裡的清理動作
+      return () => {
+        isActive = false;
+        if (currentSound) {
+          currentSound.unloadAsync(); // 停止並釋放記憶體
+          setSound(null);
+        }
+      };
+    }, [currentTrack, settingsLoaded]) // ⚠️ 注意：這裡千萬不要放 volume，否則拉滑桿會導致整首歌重播
+  );
+  useEffect(() => {
+    if (settingsLoaded) { // 確保不是初始讀取時觸發
+      AsyncStorage.setItem('bgm_track', currentTrack.toString());
+    }
+  }, [currentTrack, settingsLoaded]);
+  // 當滑桿改變時，即時調整播放中的音量
   useEffect(() => {
     if (sound) {
       sound.setVolumeAsync(volume);
     }
-  }, [volume]);
+  }, [volume, sound]); // <--- 加上 sound！這樣每次載入新音樂時，也會立刻套用當下音量
   // 3. 進場動畫 (stagger 讓按鈕一個個跳出來)
   useEffect(() => {
     Animated.stagger(
@@ -200,7 +238,11 @@ export default function LevelSelectScreen() {
               minimumValue={0}
               maximumValue={1}
               value={volume}
-              onValueChange={(val) => setVolume(val)} // 拖曳時改變音量
+              onValueChange={(val) => setVolume(val)} // 拖曳時即時改變音量
+              onSlidingComplete={(val) => {
+                // 🌟 新增這行：手放開時存檔
+                AsyncStorage.setItem('bgm_volume', val.toString()); 
+              }}
               minimumTrackTintColor="#00E5FF"
               maximumTrackTintColor="#555555"
               thumbTintColor="#00E5FF"
