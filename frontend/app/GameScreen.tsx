@@ -20,6 +20,8 @@ export default function GameScreen() {
   const [isLoading, setIsLoading] = useState(true); // 載入 state
   const [code, setCode] = useState('');
   // 用來記錄目前選中的是哪個頁籤，預設是 'description' (題目描述)
+  // activeTab === 'description' -> 顯示題目內容 (content)
+  // activeTab === 'hint' -> 顯示給 AI 的重點提示 (description)
   const [activeTab, setActiveTab] = useState('description');
   const { level: currentProgress } = useLevel(); //get level
   
@@ -78,39 +80,44 @@ const handleSubmit = async () => {
     return;
   }
 
+  // 1. 先檢查有沒有 Token，沒有就提早結束
+  const token = localStorage.getItem('userToken');
+  if (!token) {
+    window.alert("登入逾時，請重新登入！");
+    router.replace('/LoginScreen');
+    return;
+  }
+
+  // 2. 確定有 Token 且有寫程式碼，才開始轉 Loading
   setIsLoading(true);
 
   try {
-    // 1. 發送請求
-    const response = await fetch('http://localhost:8000/api/submit', {
+    // 3. 發送請求
+    const response = await fetch(`${API_BASE_URL}/api/submit`, {
       method: "POST", 
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Basic ${token}` 
       },
       body: JSON.stringify({
-        level: currentProgress, 
+        level: realLevelId,
         code: code,
       }),
-    }); 
+    });
 
     const result = await response.json();
 
     if (result.is_correct) {
-     
       window.alert("太棒了！" + result.feedback);
-
       setLocalPassed(true);
       const nextLevel = currentProgress + 1;
       setLevel(nextLevel); 
-      
- 
     } else {
-      //  處理失敗邏輯 (語法錯誤、測資沒過等)
-      alert(result.feedback);
+      window.alert(result.feedback);
     }
   } catch (error) {
     console.error("提交失敗:", error);
-    alert("連線發生錯誤，請稍後再試。");
+    window.alert("連線發生錯誤，請稍後再試。");
   } finally {
     setIsLoading(false);
   }

@@ -1,3 +1,4 @@
+import json
 import ast
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,7 +7,8 @@ from typing import Optional, Dict, Any
 
 from services.gemini_service import get_gemini_response
 from services.judge_service import check_code
-from models import Question
+from models import Question, Record, User
+from routers.user import get_current_user
 from database import engine, Base, get_session, DBSession
 from routers import question, user
 
@@ -36,24 +38,29 @@ if question:
     app.include_router(user.router)
 
 # ==========================================
-# 輕量級後端暫存區 (In-Memory Session Cache)
-# 負責記住學生最後一次執行的程式碼與系統報錯
+# 記錄學生歷史紀錄進資料庫
 # ==========================================
-student_sessions: Dict[str, Dict[str, Any]] = {}
 
-def get_session(user_id: str) -> Dict[str, Any]:
-    """取得學生的暫存狀態，若無則初始化"""
-    if user_id not in student_sessions:
-        student_sessions[user_id] = {"current_code": "", "last_error": None}
-    return student_sessions[user_id]
+def get_db_session(db: DBSession, user_id: int) -> Dict[str, Any]:
+    """從資料庫取得學生最後一次執行的狀態"""
+    # 尋找該學生的紀錄
+    record = db.query(Record).filter(Record.user_id == user_id).first()
+    if record:
+        return {"current_code": record.latest_code or "", "last_error": record.latest_error}
+    return {"current_code": "", "last_error": None}
 
-def update_session(user_id: str, code: str, last_error: Optional[str] = None):
-    """更新學生的程式碼與錯誤報表"""
-    if user_id not in student_sessions:
-        student_sessions[user_id] = {}
-    student_sessions[user_id]["current_code"] = code
-    student_sessions[user_id]["last_error"] = last_error
-
+def update_db_session(db: DBSession, user_id: int, code: str, last_error: Optional[str] = None):
+    """將學生的最新程式碼與錯誤報表寫入資料庫"""
+    record = db.query(Record).filter(Record.user_id == user_id).first()
+    if record:
+        # 如果已有紀錄，直接更新
+        record.latest_code = code
+        record.latest_error = last_error
+    else:
+        # 如果是第一次執行，建立新紀錄
+        new_record = Record(user_id=user_id, latest_code=code, latest_error=last_error)
+        db.add(new_record)
+    db.commit()
 
 # ==========================================
 # API 請求 Schema 定義 
@@ -73,7 +80,11 @@ class SubmitRequest(BaseModel):
 # ==========================================
 
 @app.post("/api/chat")
-async def chat_with_tutor(request: ChatRequest, db: DBSession):
+async def chat_with_tutor(
+    request: ChatRequest, 
+    db: DBSession,
+    current_user: User = Depends(get_current_user)
+):
     """
     與AI老師對話
     """
@@ -83,14 +94,14 @@ async def chat_with_tutor(request: ChatRequest, db: DBSession):
     
     # 2. 取得程式碼與歷史錯誤
     # 優先使用前端傳來的 code，沒有的話去暫存區找
-    session_data = get_session("demo_user") #TODO: DEMO_USER
+    session_data = get_db_session(db, current_user.id)
     current_code = request.code if request.code else session_data["current_code"]
     last_error = session_data["last_error"]
 
     # 3. 呼叫服務
     ai_response = get_gemini_response(
         level=request.level,
-        session_id="demo_user",  #TODO: DEMO_USER
+        session_id=str(current_user.id),
         message=request.message,
         code=current_code,
         last_error=last_error,
@@ -101,7 +112,11 @@ async def chat_with_tutor(request: ChatRequest, db: DBSession):
 
 
 @app.post("/api/submit")
-async def submit_code(request: SubmitRequest, db: DBSession):
+async def submit_code(
+    request: SubmitRequest, 
+    db: DBSession,
+    current_user: User = Depends(get_current_user)  # 🔒 強制綁定真實登入者
+):
     """
     處理學生提交的程式碼，進行判題
     """
@@ -113,17 +128,32 @@ async def submit_code(request: SubmitRequest, db: DBSession):
     raw_correct_answer = question_data.correct_answer.strip()
     test_cases = []
 
-    # 💡 判斷邏輯：如果是以 { 開頭並以 } 結尾，代表是 Level 7 那種字典測資
+    # 處理字典
     if raw_correct_answer.startswith("{") and raw_correct_answer.endswith("}"):
         try:
-            parsed_data = ast.literal_eval(raw_correct_answer)
+            # 優化 1：優先嘗試用標準 json 解析，將單引號替換為雙引號以增加容錯
+            try:
+                parsed_data = json.loads(raw_correct_answer.replace("'", '"'))
+            except json.JSONDecodeError:
+                # 若 JSON 解析失敗，作為備案使用 ast.literal_eval (兼容舊資料)
+                parsed_data = ast.literal_eval(raw_correct_answer)
             
-            test_data_str = parsed_data.get("test_data", "[]")
-            answer_str = parsed_data.get("answer", "[]")
+            # 優化 2：提取資料
+            test_data_raw = parsed_data.get("test_data", [])
+            answer_raw = parsed_data.get("answer", [])
             
-            test_data_list = ast.literal_eval(test_data_str)
-            answer_list = ast.literal_eval(answer_str)
+            # 優化 3：如果資料庫裡存的陣列仍是「字串」格式，則再次進行安全解析
+            if isinstance(test_data_raw, str):
+                test_data_list = json.loads(test_data_raw.replace("'", '"')) if test_data_raw.startswith("[") else ast.literal_eval(test_data_raw)
+            else:
+                test_data_list = test_data_raw
+                
+            if isinstance(answer_raw, str):
+                answer_list = json.loads(answer_raw.replace("'", '"')) if answer_raw.startswith("[") else ast.literal_eval(answer_raw)
+            else:
+                answer_list = answer_raw
             
+            # 組合測資
             for inputs, expected_out in zip(test_data_list, answer_list):
                 if isinstance(inputs, list):
                     input_str = " ".join(map(str, inputs)) + "\n"
@@ -134,14 +164,15 @@ async def submit_code(request: SubmitRequest, db: DBSession):
                     "input": input_str,
                     "expected_output": str(expected_out)
                 })
+                
         except Exception as e:
             print(f"測資解析失敗: {e}")
             raise HTTPException(
                 status_code=500, 
-                detail=f"字典測資格式解析失敗。錯誤訊息: {str(e)}"
+                detail=f"測資格式解析失敗，請確認資料庫中 correct_answer 格式。錯誤訊息: {str(e)}"
             )
     else:
-        # 💡 如果不是 { } 包起來的，就全部視為純字串答案 (Level 1~6 適用)
+        # 處理純字串答案
         test_cases.append({
             "input": "",
             "expected_output": raw_correct_answer
@@ -164,8 +195,9 @@ async def submit_code(request: SubmitRequest, db: DBSession):
         error_msg = None
 
     # 將最新的程式碼與錯誤狀態更新到記憶體中
-    update_session(
-        user_id="demo_user",  #TODO: DEMO_USER
+    update_db_session(
+        db=db,
+        user_id=current_user.id, 
         code=request.code, 
         last_error=error_msg
     )
