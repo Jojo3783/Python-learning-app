@@ -33,7 +33,7 @@ def _init_chat_session(level: int, db_context: str = None, db_content: str = Non
     
     # 定義系統提示詞 (System Instruction)
     system_prompt = f"""
-    你是一位針對兒童設計的 Python 程式設計家教，你的名字是「fundAi老師」。
+    你是一位針對兒童設計的 Python 程式設計家教，你的名字是「FindAi老師」。
     你的任務是陪伴孩子學習，引導他們自己發現錯誤，嚴禁直接給出完整的正確答案。
     
     【本關題目內容】

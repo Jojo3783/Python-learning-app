@@ -1,6 +1,6 @@
 {/* todo list */}
-// 那隻fundAi要生動一點
-// 當螢幕縮放時,fundai的文字會跑掉(jojo處理中)
+// 那隻findAi要生動一點
+// 當螢幕縮放時,findai的文字會跑掉(jojo處理中)
 
 // first page  (welcome page)
 import React, { useEffect, useRef } from 'react';
@@ -54,7 +54,7 @@ export default function index() {
             {/* 恢復你原本的透明度動畫與傾斜角度 */}
             <Animated.View style={[styles.bubbleContainer, { opacity: blinkAnim }]}>
               <View style={styles.bubble}>
-                <Text style={styles.bubbleText}>Hello, I'm FundAi !!</Text>
+                <Text style={styles.bubbleText}>Hello, I'm FindAi !!</Text>
               </View>
               <View style={styles.bubbleTail} />
             </Animated.View>
