@@ -14,8 +14,10 @@ export default function GameScreen() {
   const navigation = useNavigation();
   const router = useRouter();
 
-  const { targetLevelIndex } = useLocalSearchParams();
-  const realLevelId = Number(targetLevelIndex) + 1;
+ // 接收 targetGlobalId
+  const { targetGlobalId } = useLocalSearchParams();
+  // 不用再 +1 了！全域 ID 直接就是資料庫裡真實的關卡 ID
+  const realLevelId = Number(targetGlobalId);
   const [questionData, setQuestionData] = useState<any>(null); // 用來存後端抓來的題目
   const [isLoading, setIsLoading] = useState(true); // 載入 state
   const [code, setCode] = useState('');
@@ -24,7 +26,7 @@ export default function GameScreen() {
   // activeTab === 'hint' -> 顯示給 AI 的重點提示 (description)
   const [activeTab, setActiveTab] = useState('description');
   const { level: currentProgress } = useLevel(); //get level
-  
+  //
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
@@ -51,7 +53,7 @@ export default function GameScreen() {
           onPress={() => {
             router.push({
               pathname: '/ChatScreen',
-              params: { targetLevelIndex: targetLevelIndex }
+              params: { targetGlobalId: targetGlobalId, currentCode: code }
             });
           }}
           style={{ 
@@ -70,7 +72,7 @@ export default function GameScreen() {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, targetLevelIndex]);
+  },[navigation, targetGlobalId, code]);
 const [localPassed, setLocalPassed] = useState(false);
 const isPassed = currentProgress > realLevelId || localPassed;
 const {setLevel} = useLevel()

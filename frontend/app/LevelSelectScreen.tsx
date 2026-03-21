@@ -19,11 +19,11 @@ const BGM_TRACKS = [
 ];
 // 1. 定義關卡資料 
 const LEVELS = [
-  { id: 1, name: '輸出 Hello world', color: '#4FC3F7' },
-  { id: 2, name: '資料型態', color: '#9575CD' },
-  { id: 3, name: '算術運算', color: '#4DB6AC' },
-  { id: 4, name: '條件判斷', color: '#FF8A65' },
-  { id: 5, name: 'for 迴圈', color: '#F06292' },
+  { id: 1, name: '輸出 Hello world', color: '#4FC3F7', startId: 1, endId: 10 },
+  { id: 2, name: '資料型態', color: '#9575CD', startId: 11, endId: 20 },
+  { id: 3, name: '算術運算', color: '#4DB6AC', startId: 21, endId: 30 },
+  { id: 4, name: '條件判斷', color: '#FF8A65', startId: 31, endId: 40 },
+  { id: 5, name: 'for 迴圈', color: '#F06292', startId: 41, endId: 50 },
 ];
 
 export default function LevelSelectScreen() {
@@ -94,7 +94,7 @@ export default function LevelSelectScreen() {
           console.log("音樂播放失敗", error);
         }
       };
-
+//
       playMusic();
 
       // 當「離開這個畫面」或「切換歌曲」時，會執行這裡的清理動作
@@ -132,10 +132,17 @@ export default function LevelSelectScreen() {
     ).start();
   }, []);
 
-  const handleLevelPress = (index: number) => {
+  const handleMainLevelPress = (level: any) => {
+    // 導向新的子關卡頁面，並把這個大關的資訊傳過去
     router.push({
-      pathname: '/GameScreen',
-      params: { targetLevelIndex: index },
+      pathname: '/SubLevelSelectScreen' as any,
+      params: { 
+        mainId: level.id, 
+        mainName: level.name, 
+        color: level.color, 
+        startId: level.startId, 
+        endId: level.endId 
+      },
     });
   };
 
@@ -163,42 +170,31 @@ export default function LevelSelectScreen() {
 
         {/* 關卡列表 */}
         {LEVELS.map((level, index: number) => {
-         // 3. 核心判斷：如果關卡的 id 大於目前的進度，就是「鎖定」
-          const isLocked = level.id > currentProgress;
-          // 如果關卡的 id 小於目前的進度，就是「已完成」
-          const isCompleted = level.id < currentProgress;
+          // 核心判斷：如果目前的進度小於這個大關的第一關，代表大關鎖定
+          const isLocked = currentProgress < level.startId;
 
           return (
             <Animated.View key={level.id} style={{ opacity: animations[index] }}>
               <TouchableOpacity
-                // 4. 鎖定時禁用按鈕，點了沒反應
                 disabled={isLocked}
                 style={[
                   styles.levelBtn,
                   { 
-                    // 鎖定時側邊條變灰色，沒鎖定用原本顏色
                     borderLeftColor: isLocked ? '#555' : level.color, 
-                    // 鎖定時背景變深色 (符合你的科技感)，沒鎖定用白色
                     backgroundColor: isLocked ? 'rgba(255,255,255,0.1)' : '#FFFFFF' 
                   }
                 ]}
-                onPress={() => handleLevelPress(index)}
+                onPress={() => handleMainLevelPress(level)}
               >
                 <View style={styles.btnContent}>
                   <View style={styles.textContainer}>
-                    {/* 5. 顯示 Mission 編號，鎖定時加上鎖頭 */}
                     <Text style={[styles.levelNumber, { color: isLocked ? '#666' : '#9E9E9E' }]}>
-                      MISSION {String(level.id).padStart(2, '0')} {isLocked && '🔒'}
+                      CHAPTER {String(level.id).padStart(2, '0')} {isLocked && '🔒'}
                     </Text>
-                    
-                    {/* 6. 關卡名稱，鎖定時字體變暗 */}
                     <Text style={[styles.levelName, { color: isLocked ? '#8f8b8b' : '#333' }]}>
-                      第 {level.id} 關：{level.name}
+                      {level.name}
                     </Text>
                   </View>
-
-                  {/* 7. 已完成的顯示勾勾 */}
-                  
                 </View>
               </TouchableOpacity>
             </Animated.View>

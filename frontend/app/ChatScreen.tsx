@@ -24,10 +24,10 @@ export default function ChatScreen() {
   const navigation = useNavigation();
   
   // 接收來自 GameScreen 的參數
-  const { targetLevelIndex, currentCode } = useLocalSearchParams();
+  const { targetGlobalId, currentCode } = useLocalSearchParams();
   
 
-  const displayLevel = Number(targetLevelIndex) + 1;
+ const displayLevel = Number(targetGlobalId);
   
   const [messages, setMessages] = useState<Message[]>([
     { 
@@ -59,7 +59,7 @@ export default function ChatScreen() {
         <TouchableOpacity 
           onPress={() => router.replace({
             pathname: '/GameScreen',
-            params: { targetLevelIndex: targetLevelIndex }
+            params: { targetGlobalId: targetGlobalId } // 這裡更新
           })} 
           style={{ marginLeft: 15 }}
         >
@@ -67,7 +67,7 @@ export default function ChatScreen() {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, targetLevelIndex]);
+  }, [navigation, targetGlobalId]);
 
   // 快捷選項
   const suggestions = ["這關怎麼寫？", "提示我一下", "幫我檢查程式碼"];
@@ -164,7 +164,7 @@ export default function ChatScreen() {
             <Text style={{fontSize: 30}}>{emotion === 'happy' ? '😊' : emotion === 'surprised' ? '😲' : '🤔'}</Text>
           </View>
           <View>
-            <Text style={styles.headerName}>fundAi 老師</Text>
+            <Text style={styles.headerName}>findAi 老師</Text>
             <Text style={styles.headerStatus}>{isLoading ? '正在思考中...' : '在線陪你學習'}</Text>
           </View>
         </View>
