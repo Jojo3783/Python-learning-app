@@ -2,7 +2,7 @@
 // 點一個地方可以開一個新的頁面 可以跟ＡＩ communication (非即時，有cd時間，不是想問就問)
 //程式碼送出以後會進入 新頁面（會出現AC WA等等，結果  還有AI 點出問題）（成功之後要鎖程式畫面）
 import React, {useState,  useEffect} from 'react';
-import { View, Text, StyleSheet, Button, Alert, TextInput, TouchableOpacity, ScrollView, ActivityIndicator  } from 'react-native';
+import { View, Text, StyleSheet, Button, TextInput, TouchableOpacity, ScrollView, ActivityIndicator  } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { useLevel } from '../hooks/use-level';
 
@@ -35,10 +35,10 @@ export default function GameScreen() {
         if (response.ok) {
           setQuestionData(data);
         } else {
-          Alert.alert("錯誤", data.detail || "找不到題目");
+          window.alert("錯誤: " + (data.detail || "找不到題目"));
         }
       } catch (error) {
-        Alert.alert("連線失敗", "無法連接到伺服器，請確認 FastAPI 是否已啟動。");
+        window.alert("連線失敗: 無法連接到伺服器，請確認 FastAPI 是否已啟動。");
       } finally {
         setIsLoading(false);
       }
