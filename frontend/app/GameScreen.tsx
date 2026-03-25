@@ -220,12 +220,11 @@ const handleSubmit = async () => {
           />
         </View>
         
-        {/* 🌟 修改點 5：把 onPress 換成 handleSubmit，並在過關後 disabled */}
+    
         <Button 
-          title={(isPassed) ? "已完成" : "送出批改"} 
-          onPress={handleSubmit} 
-          color={isPassed ? "#555" : "#4CAF50"} 
-          disabled={(isPassed)}
+          title={isLoading ? "處理中..." : (isPassed ? "已完成" : "送出批改")} 
+          color={(isPassed || isLoading) ? "#555" : "#4CAF50"} 
+          disabled={isPassed || isLoading}
         />
       </View>
 
