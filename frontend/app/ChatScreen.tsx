@@ -115,11 +115,11 @@ export default function ChatScreen() {
       }
 
       const data = await response.json();
-
+      const isHint = data.dialogue.includes("提示") || data.dialogue.includes("步驟");
       // 處理 AI 回應
       const aiMsg: Message = { 
         id: (Date.now() + 1).toString(), 
-        text: data.dialogue, 
+        text: isHint ? `💡 關卡拆解：\n${data.dialogue}` : data.dialogue, 
         sender: 'ai' 
       };
       
@@ -140,6 +140,21 @@ export default function ChatScreen() {
       setTimeout(() => flatListRef.current?.scrollToEnd(), 100);
     }
   };
+
+  const renderTypingBubble = () => {
+  if (!isLoading) return null; // 如果不是載入中，就不顯示
+
+  return (
+    <View style={[styles.bubbleContainer, styles.aiContainer]}>
+      {/* 老師的思考中表情 */}
+      <Text style={styles.avatarMini}>🤔</Text> 
+      <View style={[styles.bubble, styles.aiBubble, styles.typingBubble]}>
+        {/* 用 ActivityIndicator 製作三個點點的載入動畫 */}
+        <ActivityIndicator size="small" color="#00FFFF" style={{ paddingHorizontal: 5 }} />
+      </View>
+    </View>
+  );
+};
 
   const renderItem = ({ item }: { item: Message }) => (
     <View style={[styles.bubbleContainer, item.sender === 'user' ? styles.userContainer : styles.aiContainer]}>
@@ -176,6 +191,7 @@ export default function ChatScreen() {
           keyExtractor={item => item.id}
           contentContainerStyle={styles.listContent}
           onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+          ListFooterComponent={renderTypingBubble}
         />
 
         <View style={styles.bottomArea}>
@@ -210,7 +226,10 @@ export default function ChatScreen() {
                 <ActivityIndicator color="#FFF" />
               ) : (
                 <Text style={styles.sendBtnText}>
-                  {cooldown > 0 ? `等待 ${cooldown}s` : "發送"}
+                  {isLoading 
+                    ? (inputText.includes("檢查") ? "分析程式碼..." : "思考中...") 
+                    : (cooldown > 0 ? `冷卻 ${cooldown}s` : "發送")
+                  }
                 </Text>
               )}
             </TouchableOpacity>
@@ -385,6 +404,15 @@ const styles = StyleSheet.create({
  
   disabledBtn: {
     backgroundColor: '#999', // 禁用時變成灰色
+  },
+
+  typingBubble: {
+    paddingVertical: 10,  // 上下縮小一點
+    paddingHorizontal: 15, // 左右縮小一點
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 60,         // 給一個最小寬度
+    minHeight: 40,        // 給一個最小高度
   },
  
 });
