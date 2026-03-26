@@ -223,7 +223,8 @@ const handleSubmit = async () => {
     
         <Button 
           title={isLoading ? "處理中..." : (isPassed ? "已完成" : "送出批改")} 
-          color={(isPassed || isLoading) ? "#555" : "#4CAF50"} 
+          color={(isPassed || isLoading) ? "#555" : "#4CAF50"}
+          onPress={handleSubmit} 
           disabled={isPassed || isLoading}
         />
       </View>
