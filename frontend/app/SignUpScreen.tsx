@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../utils/api';
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { 
@@ -43,7 +44,7 @@ export default function SignUpScreen() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/users/register', {
+      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

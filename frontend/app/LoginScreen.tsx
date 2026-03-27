@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../utils/api';
 import React, { useRef, useState, useEffect } from 'react';
 import { 
   View, Text, TextInput, StyleSheet, Animated, 
@@ -6,10 +7,12 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
+import { useLevel } from '../hooks/use-level';
 
 const { width } = Dimensions.get('window');
 
 export default function LoginScreen() {
+  const { setLevel } = useLevel()
   const router = useRouter();
   const [isPwdFocused, setIsPwdFocused] = useState(false);
   const [username, setUserName] = useState('');
@@ -32,7 +35,7 @@ export default function LoginScreen() {
       const base64Token = btoa(credentials); 
 
       // 2. 串接後端 login 路由
-      const response = await fetch("http://localhost:8000/api/users/login", {
+      const response = await fetch(`${API_BASE_URL}}/api/users/login`, {
         method: "POST",
         headers: {
           "Authorization": `Basic ${base64Token}`
@@ -45,6 +48,7 @@ export default function LoginScreen() {
         
         // 這樣刷新網頁或下次進入時，/api/users/me 才能用這個 token 檢查登入
         localStorage.setItem("userToken", base64Token);
+        setLevel(userData.current_level);
 
         window.alert(`登入成功，歡迎： ${userData.username}`);
 

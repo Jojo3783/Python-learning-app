@@ -1,7 +1,6 @@
 // 打開控制台，輸入這 localStorage.setItem('level', ' '); 按 Enter，然後重新整理網頁 就可以改你到等級幾
-
-
-
+import { API_BASE_URL } from '../utils/api';
+import { getAuthHeaders } from '../utils/api';
 import { useLevel } from '../hooks/use-level';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView, Modal } from 'react-native';
@@ -27,6 +26,7 @@ const LEVELS = [
 ];
 
 export default function LevelSelectScreen() {
+  const { setLevel } = useLevel()
   const { level: currentProgress } = useLevel(); 
   const router = useRouter();
   const [statusMessage, setStatusMessage] = useState('連線中...');
@@ -43,6 +43,8 @@ export default function LevelSelectScreen() {
   const [isSettingsVisible, setIsSettingsVisible] = useState(false); // 控制設定選單顯示
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const volumeRef = useRef(volume);
+
+  
 
   // 🌟 新增 2：只要 volume state 一改變，就立刻同步給 Ref
   useEffect(() => {
@@ -130,6 +132,19 @@ export default function LevelSelectScreen() {
         })
       )
     ).start();
+  }, []);
+
+  useEffect(() => {
+    const syncProgress = async () => {
+      const res = await fetch(`${API_BASE_URL}/api/users/me`, {
+        headers: getAuthHeaders()
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLevel(data.current_level); // 更新 UI
+      }
+    };
+    syncProgress();
   }, []);
 
   const handleMainLevelPress = (level: any) => {

@@ -5,9 +5,7 @@ import React, {useState,  useEffect} from 'react';
 import { View, Text, StyleSheet, Button, TextInput, TouchableOpacity, ScrollView, ActivityIndicator  } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { useLevel } from '../hooks/use-level';
-
-
-const API_BASE_URL = 'http://127.0.0.1:8000'; // 換成你電腦的真實 IP
+import { API_BASE_URL } from '../utils/api';
 
 // 設定你的 FastAPI 網址
 export default function GameScreen() {
