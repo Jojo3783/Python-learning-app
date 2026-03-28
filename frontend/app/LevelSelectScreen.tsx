@@ -77,6 +77,14 @@ export default function LevelSelectScreen() {
         if (!settingsLoaded) return; 
 
         try {
+          // 設定 Audio Mode，確保 iOS 靜音模式依然會播放，以及處理 Android
+          await Audio.setAudioModeAsync({
+            playsInSilentModeIOS: true,
+            staysActiveInBackground: false,
+            shouldDuckAndroid: true,
+            playThroughEarpieceAndroid: false,
+          });
+
           // 載入並播放音樂
           const { sound: newSound } = await Audio.Sound.createAsync(
             BGM_TRACKS[currentTrack].file,
