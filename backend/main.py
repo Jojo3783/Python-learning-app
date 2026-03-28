@@ -125,58 +125,20 @@ async def submit_code(
     if not question_data:
         raise HTTPException(status_code=404, detail="找不到該關卡資料")
 
-    raw_correct_answer = question_data.correct_answer.strip()
+    # --- 🌟 這裡開始是唯一要改的資料抓取邏輯 ---
     test_cases = []
-
-    # 處理字典
-    if raw_correct_answer.startswith("{") and raw_correct_answer.endswith("}"):
-        try:
-            # 優化 1：優先嘗試用標準 json 解析，將單引號替換為雙引號以增加容錯
-            try:
-                parsed_data = json.loads(raw_correct_answer.replace("'", '"'))
-            except json.JSONDecodeError:
-                # 若 JSON 解析失敗，作為備案使用 ast.literal_eval (兼容舊資料)
-                parsed_data = ast.literal_eval(raw_correct_answer)
-            
-            # 優化 2：提取資料
-            test_data_raw = parsed_data.get("test_data", [])
-            answer_raw = parsed_data.get("answer", [])
-            
-            # 優化 3：如果資料庫裡存的陣列仍是「字串」格式，則再次進行安全解析
-            if isinstance(test_data_raw, str):
-                test_data_list = json.loads(test_data_raw.replace("'", '"')) if test_data_raw.startswith("[") else ast.literal_eval(test_data_raw)
-            else:
-                test_data_list = test_data_raw
-                
-            if isinstance(answer_raw, str):
-                answer_list = json.loads(answer_raw.replace("'", '"')) if answer_raw.startswith("[") else ast.literal_eval(answer_raw)
-            else:
-                answer_list = answer_raw
-            
-            # 組合測資
-            for inputs, expected_out in zip(test_data_list, answer_list):
-                if isinstance(inputs, list):
-                    input_str = " ".join(map(str, inputs)) + "\n"
-                else:
-                    input_str = str(inputs) + "\n"
-                    
-                test_cases.append({
-                    "input": input_str,
-                    "expected_output": str(expected_out)
-                })
-                
-        except Exception as e:
-            print(f"測資解析失敗: {e}")
-            raise HTTPException(
-                status_code=500, 
-                detail=f"測資格式解析失敗，請確認資料庫中 correct_answer 格式。錯誤訊息: {str(e)}"
-            )
+    
+    # 直接從關聯表抓資料，取代原本那一大段 json.loads
+    if question_data.test_cases:
+        for tc in question_data.test_cases:
+            test_cases.append({
+                "input": (str(tc.input) + "\n") if tc.input else "",
+                "expected_output": str(tc.correct_answer).strip()
+            })
     else:
-        # 處理純字串答案
-        test_cases.append({
-            "input": "",
-            "expected_output": raw_correct_answer
-        })
+        # 如果萬一 test_cases 是空的，給個防錯機制
+        raise HTTPException(status_code=500, detail="此關卡尚未設定測資")
+    # --- 🌟 修改結束 ---
 
     # 處理必備語法限制 (如 "print,for")
     req_tokens_str = question_data.required_tokens or ""

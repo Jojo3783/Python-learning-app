@@ -110,8 +110,7 @@ const handleSubmit = async () => {
     if (result.is_correct) {
       window.alert("太棒了！" + result.feedback);
       setLocalPassed(true);
-      const nextLevel = currentProgress + 1;
-      setLevel(nextLevel); 
+      setLevel(result.new_level); 
     } else {
       window.alert(result.feedback);
     }

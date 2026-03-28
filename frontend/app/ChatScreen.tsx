@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../utils/api';
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -94,7 +95,7 @@ export default function ChatScreen() {
 
     try {
       // 💡 2. 發送 API 請求，並在 Headers 中加上 Authorization
-      const response = await fetch('http://localhost:8000/api/chat', {
+      const response = await fetch(`${API_BASE_URL}/api/users/chat`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

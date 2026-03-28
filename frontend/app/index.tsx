@@ -69,19 +69,7 @@ export default function index() {
 
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, { 
-              backgroundColor: themeColors.buttonColor,
-              marginVertical:10,
-             }]}
-             onPress={() => {
-              router.push('/LevelSelectScreen'); 
-            }}
-          >
-            <Text style={[styles.buttonText, { color: themeColors.textColor }]}>
-              Let's Started
-            </Text>
-          </TouchableOpacity>
+          
 
            <TouchableOpacity
             style={[styles.button, { backgroundColor: themeColors.buttonColor }]}
