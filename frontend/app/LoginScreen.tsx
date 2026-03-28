@@ -35,7 +35,7 @@ export default function LoginScreen() {
       const base64Token = btoa(credentials); 
 
       // 2. 串接後端 login 路由
-      const response = await fetch(`${API_BASE_URL}}/api/users/login`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
         method: "POST",
         headers: {
           "Authorization": `Basic ${base64Token}`
