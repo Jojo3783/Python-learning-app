@@ -1,0 +1,8 @@
+fastapi==0.133.0
+pydantic==2.12.5
+python-dotenv==1.2.1
+uvicorn==0.41.0
+sqlalchemy==2.0.47
+bcrypt==5.0.0
+psycopg2-binary==2.9.11
+google-genai == 1.68.0
